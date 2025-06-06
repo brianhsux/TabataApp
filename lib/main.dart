@@ -18,10 +18,11 @@ class TabataApp extends StatelessWidget {
     return MaterialApp(
       title: 'TabataApp',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
         textTheme: TextTheme(
-          bodyLarge: TextStyle(fontSize: 24, color: Colors.white),
-          bodyMedium: TextStyle(fontSize: 18, color: Colors.white),
+          bodyLarge: TextStyle(fontSize: 24, color: Colors.black),
+          bodyMedium: TextStyle(fontSize: 18, color: Colors.black),
         ),
       ),
       home: TabataScreen(),
@@ -356,61 +357,110 @@ class _TabataScreenState extends State<TabataScreen> {
   }
 
   Widget _buildProgressView(TabataState state) {
-    Color backgroundColor;
+    LinearGradient gradient;
     Color textColor;
     String phaseText;
-    
+    IconData iconData;
     // Make sure the displayed time is correct based on the current phase
     int displayTime = _remainingTime;
     if (!_isRunning) {
       displayTime = _currentPhase == 'PREP' ? state.prepTime : 
                    _currentPhase == 'WORK' ? state.workTime : state.restTime;
     }
-
     switch (_currentPhase) {
       case 'PREP':
-        backgroundColor = Colors.yellow;
-        textColor = Colors.black;
+        gradient = LinearGradient(
+          colors: [Colors.yellow.shade200, Colors.orange.shade200],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        );
+        textColor = Colors.orange.shade900;
         phaseText = 'Prep';
+        iconData = Icons.timer;
         break;
       case 'WORK':
-        backgroundColor = Colors.red;
+        gradient = LinearGradient(
+          colors: [Colors.red.shade400, Colors.pink.shade200],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        );
         textColor = Colors.white;
         phaseText = 'Work';
+        iconData = Icons.fitness_center;
         break;
       case 'REST':
-        backgroundColor = Colors.green;
+        gradient = LinearGradient(
+          colors: [Colors.green.shade400, Colors.teal.shade200],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        );
         textColor = Colors.white;
         phaseText = 'Rest';
+        iconData = Icons.self_improvement;
         break;
       default:
-        backgroundColor = Colors.grey; // Fallback
+        gradient = LinearGradient(
+          colors: [Colors.grey.shade300, Colors.grey.shade500],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        );
         textColor = Colors.black;
         phaseText = _currentPhase;
+        iconData = Icons.hourglass_empty;
     }
-
     return Container(
-      color: backgroundColor,
+      decoration: BoxDecoration(
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      margin: EdgeInsets.all(24),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Icon(iconData, size: 64, color: textColor),
+            SizedBox(height: 16),
             Text(
               phaseText,
-              style: TextStyle(fontSize: 48, color: textColor, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 48, color: textColor, fontWeight: FontWeight.bold, letterSpacing: 2),
             ),
             Text(
               '$displayTime',
-              style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor),
+              style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor, shadows: [
+                Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
+              ]),
             ),
             SizedBox(height: 20),
-            Text(
-              'Cycle: $_currentCycle / ${state.cycles}',
-              style: TextStyle(fontSize: 24, color: textColor),
+            // Cycle and Set on separate lines
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.repeat, color: textColor),
+                SizedBox(width: 8),
+                Text(
+                  'Cycle:  $_currentCycle / ${state.cycles}',
+                  style: TextStyle(fontSize: 24, color: textColor),
+                ),
+              ],
             ),
-            Text(
-              'Set: $_currentSet / ${state.sets}',
-              style: TextStyle(fontSize: 24, color: textColor),
+            SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.layers, color: textColor),
+                SizedBox(width: 8),
+                Text(
+                  'Set:  $_currentSet / ${state.sets}',
+                  style: TextStyle(fontSize: 24, color: textColor),
+                ),
+              ],
             ),
           ],
         ),
@@ -425,20 +475,37 @@ class _TabataScreenState extends State<TabataScreen> {
           children: [
             // Preparation block
             Container(
-              color: Colors.yellow,
-              padding: EdgeInsets.symmetric(vertical: 10), // Added padding for better spacing
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.yellow.shade200, Colors.orange.shade200],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.yellow.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Prep', style: TextStyle(fontSize: 24, color: Colors.black)),
+                  Icon(Icons.timer, color: Colors.orange.shade900),
+                  SizedBox(width: 10),
+                  Text('Prep', style: TextStyle(fontSize: 24, color: Colors.orange.shade900, fontWeight: FontWeight.bold)),
                   SizedBox(width: 10),
                   Text(
                     state.prepTime.toString(),
-                    style: TextStyle(fontSize: 24, color: Colors.black),
+                    style: TextStyle(fontSize: 24, color: Colors.orange.shade900, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 10),
                   IconButton(
-                    icon: Icon(Icons.settings, color: Colors.black),
+                    icon: Icon(Icons.settings, color: Colors.orange.shade900),
                     onPressed: () => _showEditDialog('Prep', state.prepTime, state.updatePrepTime),
                   ),
                 ],
@@ -446,18 +513,33 @@ class _TabataScreenState extends State<TabataScreen> {
             ),
             // Exercise block
             Container(
-              color: Colors.red,
-              padding: EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.red.shade400, Colors.pink.shade200],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.red.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.music_note, color: Colors.white),
+                  Icon(Icons.fitness_center, color: Colors.white),
                   SizedBox(width: 10),
-                  Text('Work', style: Theme.of(context).textTheme.bodyLarge),
+                  Text('Work', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
                   SizedBox(width: 10),
                   Text(
                     state.workTime.toString(),
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 10),
                   IconButton(
@@ -469,16 +551,33 @@ class _TabataScreenState extends State<TabataScreen> {
             ),
             // Rest block
             Container(
-              color: Colors.green,
-              padding: EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green.shade400, Colors.teal.shade200],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Rest', style: Theme.of(context).textTheme.bodyLarge),
+                  Icon(Icons.self_improvement, color: Colors.white),
+                  SizedBox(width: 10),
+                  Text('Rest', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
                   SizedBox(width: 10),
                   Text(
                     state.restTime.toString(),
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 10),
                   IconButton(
@@ -490,8 +589,23 @@ class _TabataScreenState extends State<TabataScreen> {
             ),
             // Bottom cycles and sets block
             Container(
-              color: Colors.blue,
-              padding: EdgeInsets.symmetric(vertical: 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue.shade400, Colors.indigo.shade200],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -500,12 +614,12 @@ class _TabataScreenState extends State<TabataScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.video_library, color: Colors.white),
+                        Icon(Icons.repeat, color: Colors.white),
                         SizedBox(height: 10),
-                        Text('Cycles', style: Theme.of(context).textTheme.bodyMedium),
+                        Text('Cycles', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
                         Text(
                           state.cycles.toString(),
-                          style: Theme.of(context).textTheme.bodyLarge,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -530,12 +644,12 @@ class _TabataScreenState extends State<TabataScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.alarm, color: Colors.white),
+                        Icon(Icons.layers, color: Colors.white),
                         SizedBox(height: 10),
-                        Text('Sets', style: Theme.of(context).textTheme.bodyMedium),
+                        Text('Sets', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
                         Text(
                           state.sets.toString(),
-                          style: Theme.of(context).textTheme.bodyLarge,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
