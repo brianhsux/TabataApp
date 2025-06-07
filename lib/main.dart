@@ -42,12 +42,24 @@ class TabataState with ChangeNotifier {
 
   // BGM 開關狀態
   bool bgmEnabled = true;
+  // 內建預設值
+  static const int defaultPrepTime = 10;
+  static const int defaultWorkTime = 45;
+  static const int defaultRestTime = 15;
+  static const int defaultCycles = 8;
+  static const int defaultSets = 1;
+
   TabataState() {
-    _loadBgmPreference();
+    _loadPreferences();
   }
-  Future<void> _loadBgmPreference() async {
+  Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     bgmEnabled = prefs.getBool('bgmEnabled') ?? true;
+    prepTime = prefs.getInt('prepTime') ?? defaultPrepTime;
+    workTime = prefs.getInt('workTime') ?? defaultWorkTime;
+    restTime = prefs.getInt('restTime') ?? defaultRestTime;
+    cycles = prefs.getInt('cycles') ?? defaultCycles;
+    sets = prefs.getInt('sets') ?? defaultSets;
     notifyListeners();
   }
   void setBgmEnabled(bool value) async {
@@ -56,30 +68,51 @@ class TabataState with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('bgmEnabled', value);
   }
-
-  void updatePrepTime(int newTime) {
+  void updatePrepTime(int newTime) async {
     prepTime = newTime;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('prepTime', newTime);
   }
-
-  void updateWorkTime(int newTime) {
+  void updateWorkTime(int newTime) async {
     workTime = newTime;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('workTime', newTime);
   }
-
-  void updateRestTime(int newTime) {
+  void updateRestTime(int newTime) async {
     restTime = newTime;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('restTime', newTime);
   }
-
-  void updateCycles(int newCycles) {
+  void updateCycles(int newCycles) async {
     cycles = newCycles;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('cycles', newCycles);
   }
-
-  void updateSets(int newSets) {
+  void updateSets(int newSets) async {
     sets = newSets;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('sets', newSets);
+  }
+  Future<void> resetPreferences() async {
+    prepTime = defaultPrepTime;
+    workTime = defaultWorkTime;
+    restTime = defaultRestTime;
+    cycles = defaultCycles;
+    sets = defaultSets;
+    bgmEnabled = true;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('prepTime', defaultPrepTime);
+    await prefs.setInt('workTime', defaultWorkTime);
+    await prefs.setInt('restTime', defaultRestTime);
+    await prefs.setInt('cycles', defaultCycles);
+    await prefs.setInt('sets', defaultSets);
+    await prefs.setBool('bgmEnabled', true);
   }
 }
 

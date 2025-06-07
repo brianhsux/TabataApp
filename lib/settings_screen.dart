@@ -20,6 +20,24 @@ class SettingsScreen extends StatelessWidget {
               tabataState.setBgmEnabled(value);
             },
           ),
+          const Divider(),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ElevatedButton.icon(
+              icon: Icon(Icons.refresh),
+              label: Text('重設所有設定'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () async {
+                await tabataState.resetPreferences();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('已重設為預設值')),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
