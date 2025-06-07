@@ -296,7 +296,7 @@ class _TabataScreenState extends State<TabataScreen> {
       if (second == 3 || second == 2 || second == 1) {
         await _audioPlayer.play(AssetSource('sounds/beep.mp3'));
       } else if (second == 0) {
-        await _audioPlayer.play(AssetSource('sounds/beep.mp3'));
+        await _audioPlayer.play(AssetSource('sounds/start.wav'));
       }
     } else if (_currentPhase == 'WORK') {
       if (second == 0) {
