@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'settings_screen.dart';
 
 void main() {
   runApp(
@@ -37,6 +39,23 @@ class TabataState with ChangeNotifier {
   int restTime = 15; // Rest time (seconds)
   int cycles = 8; // Number of cycles
   int sets = 1; // Number of sets
+
+  // BGM 開關狀態
+  bool bgmEnabled = true;
+  TabataState() {
+    _loadBgmPreference();
+  }
+  Future<void> _loadBgmPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    bgmEnabled = prefs.getBool('bgmEnabled') ?? true;
+    notifyListeners();
+  }
+  void setBgmEnabled(bool value) async {
+    bgmEnabled = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('bgmEnabled', value);
+  }
 
   void updatePrepTime(int newTime) {
     prepTime = newTime;
@@ -690,7 +709,10 @@ class _TabataScreenState extends State<TabataScreen> {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              // Placeholder for potential global settings, or remove if redundant
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
             },
           ),
         ],
@@ -731,6 +753,8 @@ class _TabataScreenState extends State<TabataScreen> {
   }
 
   Future<void> _playBgm(String phase) async {
+    final state = Provider.of<TabataState>(context, listen: false);
+    if (!state.bgmEnabled) return;
     await _stopBgm();
     _bgmPlayer = AudioPlayer();
     String asset = phase == 'workout' ? 'assets/sounds/mystery.wav' : 'assets/sounds/rest.wav';
