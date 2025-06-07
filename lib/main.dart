@@ -78,6 +78,7 @@ class _TabataScreenState extends State<TabataScreen> {
   int _currentSet = 1;
   int _remainingTime = 0;
   int _totalDurationMillis = 0;
+  int? _lastBeepSecond; // 避免重複播放同一秒音效
 
   @override
   void initState() {
@@ -121,9 +122,12 @@ class _TabataScreenState extends State<TabataScreen> {
             // Only update if remaining time is not already 0
             if (value >= 0) {
               _remainingTime = value;
-              // Debug print to track timer changes
-
-              print('Timer update: $_remainingTime seconds remaining');
+              // 倒數音效與特殊音效
+              if (_currentPhase == 'PREP' && value == (context.read<TabataState>().prepTime + 1)) {
+                // PREP開始時不播聲音
+              } else {
+                _playCountdownBeep(_remainingTime);
+              }
             }
           });
         }
@@ -180,7 +184,6 @@ class _TabataScreenState extends State<TabataScreen> {
     setState(() {
       _isRunning = true;
     });
-    _playSound();
   }
 
   void _stopTimer() {
@@ -216,7 +219,6 @@ class _TabataScreenState extends State<TabataScreen> {
     
     // Remove the _remainingTime <= 0 check since onEnded already confirms the timer is done
     if (_isRunning) {
-      _playSound();
       if (_currentPhase == 'PREP') {
         print('Transitioning from PREP to WORK');
         // First stop the timer
@@ -286,8 +288,21 @@ class _TabataScreenState extends State<TabataScreen> {
     }
   }
 
-  void _playSound() async {
-    await _audioPlayer.play(AssetSource('sounds/beep.mp3'));
+  // 倒數音效與特殊音效
+  Future<void> _playCountdownBeep(int second) async {
+    if (_lastBeepSecond == second) return;
+    _lastBeepSecond = second;
+    if (_currentPhase == 'PREP' || _currentPhase == 'REST') {
+      if (second == 3 || second == 2 || second == 1) {
+        await _audioPlayer.play(AssetSource('sounds/beep.mp3'));
+      } else if (second == 0) {
+        await _audioPlayer.play(AssetSource('sounds/beep.mp3'));
+      }
+    } else if (_currentPhase == 'WORK') {
+      if (second == 0) {
+        await _audioPlayer.play(AssetSource('sounds/victory.wav'));
+      }
+    }
   }
 
   void _showEditDialog(String phase, int currentTime, Function(int) onUpdate) {
@@ -335,9 +350,21 @@ class _TabataScreenState extends State<TabataScreen> {
     IconData iconData;
     // Make sure the displayed time is correct based on the current phase
     int displayTime = _remainingTime;
-    if (!_isRunning) {
-      displayTime = _currentPhase == 'PREP' ? state.prepTime : 
-                   _currentPhase == 'WORK' ? state.workTime : state.restTime;
+    String displayText = '';
+    if (_currentPhase == 'PREP' || _currentPhase == 'REST') {
+      if (_remainingTime == 0) {
+        displayText = 'Go';
+      } else {
+        displayText = displayTime.toString();
+      }
+    } else if (_currentPhase == 'WORK') {
+      if (_remainingTime == 0) {
+        displayText = '--';
+      } else {
+        displayText = displayTime.toString();
+      }
+    } else {
+      displayText = displayTime.toString();
     }
     switch (_currentPhase) {
       case 'PREP':
@@ -404,7 +431,7 @@ class _TabataScreenState extends State<TabataScreen> {
               style: TextStyle(fontSize: 48, color: textColor, fontWeight: FontWeight.bold, letterSpacing: 2),
             ),
             Text(
-              '$displayTime',
+              displayText,
               style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor, shadows: [
                 Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
               ]),
