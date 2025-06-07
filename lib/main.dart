@@ -89,14 +89,14 @@ class _TabataScreenState extends State<TabataScreen> {
       if (mounted) {
         final state = context.read<TabataState>();
         // Make sure we're using the correct prepTime value (10 seconds)
-        int prepTimeMillis = state.prepTime * 1000;
+        int prepTimeMillis = (state.prepTime + 1) * 1000;
         _totalDurationMillis = prepTimeMillis;
         
         // Properly set the initial timer value
         _timer.setPresetTime(mSec: prepTimeMillis);
         
         setState(() {
-          _remainingTime = state.prepTime;
+          _remainingTime = state.prepTime + 1;
           // Force update to ensure timer shows correct prep time
           print('Initial prep time: ${state.prepTime}');
         });
@@ -156,42 +156,27 @@ class _TabataScreenState extends State<TabataScreen> {
     if (!_isRunning) {
       final state = Provider.of<TabataState>(context, listen: false);
       int presetMillis;
-      
       // Ensure timer is correctly initialized
       _timer.onStopTimer();
-      
-      // Fix for prep time counting from 20 instead of 10
+      // Add 1 second to each phase for a full countdown experience
       if (_currentPhase == 'PREP') {
-        // Debug print to confirm prep time
-        print("Starting PREP phase with ${state.prepTime} seconds");
-        
-        // Explicitly set the correct prep time in milliseconds
-        presetMillis = state.prepTime * 1000;
-        print('Setting preset time to PREP phase: ${presetMillis}');
-
-        _remainingTime = state.prepTime;
+        presetMillis = (state.prepTime + 1) * 1000;
+        _remainingTime = state.prepTime + 1;
       } else if (_currentPhase == 'WORK') {
-        presetMillis = state.workTime * 1000;
-        _remainingTime = state.workTime;
+        presetMillis = (state.workTime + 1) * 1000;
+        _remainingTime = state.workTime + 1;
       } else { // REST
-        presetMillis = state.restTime * 1000;
-        _remainingTime = state.restTime;
+        presetMillis = (state.restTime + 1) * 1000;
+        _remainingTime = state.restTime + 1;
       }
-      
-      // First reset the timer completely
       _timer.onResetTimer();
-      // Then set the preset time - order matters here
       _timer.setPresetTime(mSec: presetMillis);
-      
-      // Make sure _remainingTime is correctly set (especially for PREP)
       setState(() {
-        _remainingTime = _currentPhase == 'PREP' ? state.prepTime : 
-                         _currentPhase == 'WORK' ? state.workTime : state.restTime;
+        _remainingTime = _currentPhase == 'PREP' ? state.prepTime + 1 :
+                         _currentPhase == 'WORK' ? state.workTime + 1 : state.restTime + 1;
       });
     }
-    
     _timer.onStartTimer();
-    
     setState(() {
       _isRunning = true;
     });
@@ -206,33 +191,20 @@ class _TabataScreenState extends State<TabataScreen> {
   }
 
   void _resetTimer() {
-    _timer.onStopTimer(); // Make sure to stop first
-    
-    // Clean up old timer first
+    _timer.onStopTimer();
     _timer.dispose();
-    
-    // Create a new timer instance to ensure it's properly initialized
     _initTimer();
-    
     if (mounted) {
       final state = Provider.of<TabataState>(context, listen: false);
-      // Ensure we're using the correct prep time (10 seconds)
-      int prepTimeMillis = state.prepTime * 1000;
-      
-      // Debug logging to see what's happening
-      print('Reset Timer - Using prep time: ${state.prepTime} seconds');
-      
+      int prepTimeMillis = (state.prepTime + 1) * 1000;
       _timer.setPresetTime(mSec: prepTimeMillis);
-      
       setState(() {
         _isRunning = false;
         _currentPhase = 'PREP';
         _currentCycle = 1;
         _currentSet = 1;
-        _remainingTime = state.prepTime;
+        _remainingTime = state.prepTime + 1;
         _totalDurationMillis = prepTimeMillis;
-        // Print to confirm setState applied correctly
-        print('Reset Timer - _remainingTime set to: $_remainingTime seconds');
       });
     }
   }
@@ -252,13 +224,13 @@ class _TabataScreenState extends State<TabataScreen> {
         
         setState(() {
           _currentPhase = 'WORK';
-          _remainingTime = state.workTime;
+          _remainingTime = state.workTime + 1;
           print('Setting remaining time to WORK phase: ${state.workTime}'); 
         });
         
         // Order matters: reset first, then set preset time
         _timer.onResetTimer();
-        _timer.setPresetTime(mSec: state.workTime * 1000);
+        _timer.setPresetTime(mSec: (state.workTime + 1) * 1000);
         _timer.onStartTimer();
         
         print('Started WORK phase with ${state.workTime} seconds');
@@ -269,13 +241,13 @@ class _TabataScreenState extends State<TabataScreen> {
         
         setState(() {
           _currentPhase = 'REST';
-          _remainingTime = state.restTime;
+          _remainingTime = state.restTime + 1;
           print('Setting remaining time to REST phase: ${state.restTime}');
         });
         
         // Order matters: reset first, then set preset time
         _timer.onResetTimer();
-        _timer.setPresetTime(mSec: state.restTime * 1000);
+        _timer.setPresetTime(mSec: (state.restTime + 1) * 1000);
         _timer.onStartTimer();
         
         print('Started REST phase with ${state.restTime} seconds');
@@ -285,10 +257,10 @@ class _TabataScreenState extends State<TabataScreen> {
           setState(() {
             _currentCycle++;
             _currentPhase = 'WORK';
-            _remainingTime = state.workTime;
+            _remainingTime = state.workTime + 1;
             print('Setting remaining time to WORK phase: ${state.workTime}');
           });
-          _timer.setPresetTime(mSec: state.workTime * 1000);
+          _timer.setPresetTime(mSec: (state.workTime + 1) * 1000);
           _timer.onResetTimer();
           _timer.onStartTimer();
         } 
@@ -298,10 +270,10 @@ class _TabataScreenState extends State<TabataScreen> {
             _currentSet++;
             _currentCycle = 1;
             _currentPhase = 'PREP';
-            _remainingTime = state.prepTime;
+            _remainingTime = state.prepTime + 1;
             print('Setting remaining time to PREP phase: ${state.prepTime}');
           });
-          _timer.setPresetTime(mSec: state.prepTime * 1000);
+          _timer.setPresetTime(mSec: (state.prepTime + 1) * 1000);
           _timer.onResetTimer();
           _timer.onStartTimer();
         } 
