@@ -72,6 +72,7 @@ class TabataScreen extends StatefulWidget {
 class _TabataScreenState extends State<TabataScreen> {
   late StopWatchTimer _timer;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  AudioPlayer? _bgmPlayer;
   bool _isRunning = false;
   String _currentPhase = 'PREP';
   int _currentCycle = 1;
@@ -152,6 +153,7 @@ class _TabataScreenState extends State<TabataScreen> {
   void dispose() {
     _timer.dispose();
     _audioPlayer.dispose();
+    _bgmPlayer?.dispose();
     super.dispose();
   }
 
@@ -184,16 +186,23 @@ class _TabataScreenState extends State<TabataScreen> {
     setState(() {
       _isRunning = true;
     });
+    if (_currentPhase == 'WORK') {
+      _playBgm('workout');
+    } else if (_currentPhase == 'REST') {
+      _playBgm('rest');
+    }
   }
 
-  void _stopTimer() {
+  void _stopTimer() async {
+    await _stopBgm(); // stop 時也停止背景音樂
     _timer.onStopTimer();
     setState(() {
       _isRunning = false;
     });
   }
 
-  void _resetTimer() {
+  void _resetTimer() async {
+    await _stopBgm(); // reset 時也停止背景音樂
     _timer.onStopTimer();
     _timer.dispose();
     _initTimer();
@@ -214,73 +223,51 @@ class _TabataScreenState extends State<TabataScreen> {
 
   void _handlePhaseTransition() async {
     final state = Provider.of<TabataState>(context, listen: false);
-    // Debug log to show transition
     print('Phase transition from: $_currentPhase');
-    
-    // Remove the _remainingTime <= 0 check since onEnded already confirms the timer is done
     if (_isRunning) {
+      await _stopBgm();
       if (_currentPhase == 'PREP') {
-        print('Transitioning from PREP to WORK');
-        // First stop the timer
         _timer.onStopTimer();
-        
         setState(() {
           _currentPhase = 'WORK';
           _remainingTime = state.workTime + 1;
-          print('Setting remaining time to WORK phase: ${state.workTime}'); 
         });
-        
-        // Order matters: reset first, then set preset time
         _timer.onResetTimer();
         _timer.setPresetTime(mSec: (state.workTime + 1) * 1000);
+        await _playBgm('workout'); // 播放workout背景音樂
         _timer.onStartTimer();
-        
-        print('Started WORK phase with ${state.workTime} seconds');
       } else if (_currentPhase == 'WORK') {
-        print('Transitioning from WORK to REST');
-        // First stop the timer
         _timer.onStopTimer();
-        
         setState(() {
           _currentPhase = 'REST';
           _remainingTime = state.restTime + 1;
-          print('Setting remaining time to REST phase: ${state.restTime}');
         });
-        
-        // Order matters: reset first, then set preset time
         _timer.onResetTimer();
         _timer.setPresetTime(mSec: (state.restTime + 1) * 1000);
+        await _playBgm('rest'); // 播放rest背景音樂
         _timer.onStartTimer();
-        
-        print('Started REST phase with ${state.restTime} seconds');
       } else if (_currentPhase == 'REST') {
-        // Check if we have more cycles in current set
         if (_currentCycle < state.cycles) {
           setState(() {
             _currentCycle++;
             _currentPhase = 'WORK';
             _remainingTime = state.workTime + 1;
-            print('Setting remaining time to WORK phase: ${state.workTime}');
           });
           _timer.setPresetTime(mSec: (state.workTime + 1) * 1000);
           _timer.onResetTimer();
+          await _playBgm('workout'); // 播放workout背景音樂
           _timer.onStartTimer();
-        } 
-        // Check if we have more sets after completing all cycles
-        else if (_currentSet < state.sets) {
+        } else if (_currentSet < state.sets) {
           setState(() {
             _currentSet++;
             _currentCycle = 1;
             _currentPhase = 'PREP';
             _remainingTime = state.prepTime + 1;
-            print('Setting remaining time to PREP phase: ${state.prepTime}');
           });
           _timer.setPresetTime(mSec: (state.prepTime + 1) * 1000);
           _timer.onResetTimer();
           _timer.onStartTimer();
-        } 
-        // All cycles and sets completed
-        else {
+        } else {
           _stopTimer();
           _resetTimer();
         }
@@ -741,5 +728,22 @@ class _TabataScreenState extends State<TabataScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _playBgm(String phase) async {
+    await _stopBgm();
+    _bgmPlayer = AudioPlayer();
+    String asset = phase == 'workout' ? 'assets/sounds/mystery.wav' : 'assets/sounds/rest.wav';
+    await _bgmPlayer!.setSource(AssetSource(asset.replaceFirst('assets/', '')));
+    await _bgmPlayer!.setReleaseMode(ReleaseMode.loop);
+    await _bgmPlayer!.resume();
+  }
+
+  Future<void> _stopBgm() async {
+    if (_bgmPlayer != null) {
+      await _bgmPlayer!.stop();
+      await _bgmPlayer!.dispose();
+      _bgmPlayer = null;
+    }
   }
 }
