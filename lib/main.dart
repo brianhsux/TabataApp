@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'settings_screen.dart';
+import 'exercise_db.dart';
+import 'exercise_history_screen.dart'; // <-- 新增匯入
 
 void main() {
   runApp(
@@ -34,21 +37,17 @@ class TabataApp extends StatelessWidget {
 
 // State management class
 class TabataState with ChangeNotifier {
-  int prepTime = 10; // Preparation time (seconds) - explicitly set to 10
-  int workTime = 45; // Exercise time (seconds)
-  int restTime = 15; // Rest time (seconds)
-  int cycles = 8; // Number of cycles
-  int sets = 1; // Number of sets
-
-  // BGM 開關狀態
+  int prepTime = 10;
+  int workTime = 45;
+  int restTime = 15;
+  int cycles = 8;
+  int sets = 1;
   bool bgmEnabled = true;
-  // 內建預設值
   static const int defaultPrepTime = 10;
   static const int defaultWorkTime = 45;
   static const int defaultRestTime = 15;
   static const int defaultCycles = 8;
   static const int defaultSets = 1;
-
   TabataState() {
     _loadPreferences();
   }
@@ -130,8 +129,11 @@ class _TabataScreenState extends State<TabataScreen> {
   int _currentCycle = 1;
   int _currentSet = 1;
   int _remainingTime = 0;
-  int _totalDurationMillis = 0;
   int? _lastBeepSecond; // 避免重複播放同一秒音效
+
+  // 新增：運動進行秒數與 Timer
+  Timer? _elapsedTimer;
+  int _elapsedSeconds = 0;
 
   @override
   void initState() {
@@ -144,7 +146,6 @@ class _TabataScreenState extends State<TabataScreen> {
         final state = context.read<TabataState>();
         // Make sure we're using the correct prepTime value (10 seconds)
         int prepTimeMillis = (state.prepTime + 1) * 1000;
-        _totalDurationMillis = prepTimeMillis;
         
         // Properly set the initial timer value
         _timer.setPresetTime(mSec: prepTimeMillis);
@@ -152,7 +153,7 @@ class _TabataScreenState extends State<TabataScreen> {
         setState(() {
           _remainingTime = state.prepTime + 1;
           // Force update to ensure timer shows correct prep time
-          print('Initial prep time: ${state.prepTime}');
+          debugPrint('Initial prep time: 	${state.prepTime}');
         });
       }
     });
@@ -196,9 +197,24 @@ class _TabataScreenState extends State<TabataScreen> {
         }
       } catch (e) {
         // Provider might not be available during initial call
-        print('Provider not available yet during timer initialization: $e');
+        debugPrint('Provider not available yet during timer initialization: $e');
       }
     }
+  }
+
+  // 新增：啟動/停止運動秒數 Timer
+  void _startElapsedTimer() {
+    _elapsedSeconds = 0;
+    _elapsedTimer?.cancel();
+    _elapsedTimer = Timer.periodic(Duration(seconds: 1), (_) {
+      setState(() {
+        _elapsedSeconds++;
+      });
+    });
+  }
+  void _stopElapsedTimer() {
+    _elapsedTimer?.cancel();
+    _elapsedTimer = null;
   }
 
   @override
@@ -206,10 +222,12 @@ class _TabataScreenState extends State<TabataScreen> {
     _timer.dispose();
     _audioPlayer.dispose();
     _bgmPlayer?.dispose();
+    _stopElapsedTimer(); // 確保釋放 Timer
     super.dispose();
   }
 
   void _startTimer() {
+    _startElapsedTimer(); // 運動一開始就啟動計時
     // Only set preset time if timer is not already running
     if (!_isRunning) {
       final state = Provider.of<TabataState>(context, listen: false);
@@ -246,11 +264,64 @@ class _TabataScreenState extends State<TabataScreen> {
   }
 
   void _stopTimer() async {
-    await _stopBgm(); // stop 時也停止背景音樂
+    await _stopBgm();
     _timer.onStopTimer();
     setState(() {
       _isRunning = false;
     });
+    _stopElapsedTimer();
+    final state = Provider.of<TabataState>(context, listen: false);
+    final endTime = DateTime.now();
+    final duration = _elapsedSeconds;
+    final record = ExerciseRecord(
+      workoutTime: state.workTime,
+      restTime: state.restTime,
+      cycles: state.cycles,
+      sets: state.sets,
+      durationSeconds: duration,
+      dateTime: endTime.toIso8601String(),
+    );
+    await ExerciseDatabase.instance.insertRecord(record);
+    _showExerciseReportDialogFromRecord(record);
+  }
+
+  void _showExerciseReportDialogFromRecord(ExerciseRecord record) {
+    final totalWorkout = record.workoutTime * record.cycles * record.sets;
+    final totalRest = record.restTime * record.cycles * record.sets;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('運動結果報告'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('運動時間： ${_formatDuration(record.durationSeconds)}'),
+            Text('Workout 秒數：$totalWorkout'),
+            Text('Rest 秒數：$totalRest'),
+            Text('Cycles：${record.cycles}'),
+            Text('Sets：${record.sets}'),
+            Text('日期：${_formatDateTime(record.dateTime)}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('確定'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDuration(int seconds) {
+    final d = Duration(seconds: seconds);
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    return '${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}';
+  }
+  String _formatDateTime(String dt) {
+    final d = DateTime.parse(dt);
+    return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')} ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
   }
 
   void _resetTimer() async {
@@ -258,6 +329,7 @@ class _TabataScreenState extends State<TabataScreen> {
     _timer.onStopTimer();
     _timer.dispose();
     _initTimer();
+    _stopElapsedTimer(); // 停止本地秒數計時
     if (mounted) {
       final state = Provider.of<TabataState>(context, listen: false);
       int prepTimeMillis = (state.prepTime + 1) * 1000;
@@ -268,14 +340,14 @@ class _TabataScreenState extends State<TabataScreen> {
         _currentCycle = 1;
         _currentSet = 1;
         _remainingTime = state.prepTime + 1;
-        _totalDurationMillis = prepTimeMillis;
+        _elapsedSeconds = 0;
       });
     }
   }
 
   void _handlePhaseTransition() async {
     final state = Provider.of<TabataState>(context, listen: false);
-    print('Phase transition from: $_currentPhase');
+    debugPrint('Phase transition from: $_currentPhase');
     if (_isRunning) {
       await _stopBgm();
       if (_currentPhase == 'PREP') {
@@ -320,6 +392,7 @@ class _TabataScreenState extends State<TabataScreen> {
           _timer.onResetTimer();
           _timer.onStartTimer();
         } else {
+          // 最後一輪workout結束時也要累積
           _stopTimer();
           _resetTimer();
         }
@@ -452,7 +525,7 @@ class _TabataScreenState extends State<TabataScreen> {
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withAlpha((0.08 * 255).toInt()),
             blurRadius: 16,
             offset: Offset(0, 8),
           ),
@@ -500,6 +573,16 @@ class _TabataScreenState extends State<TabataScreen> {
                 ),
               ],
             ),
+            SizedBox(height: 24),
+            if (_isRunning)
+              Builder(
+                builder: (context) {
+                  final d = Duration(seconds: _elapsedSeconds);
+                  String twoDigits(int n) => n.toString().padLeft(2, '0');
+                  final timeStr = '${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}';
+                  return Text('本次運動已進行：$timeStr', style: TextStyle(fontSize: 18, color: Colors.blueGrey));
+                },
+              ),
           ],
         ),
       ),
@@ -522,7 +605,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.yellow.withOpacity(0.3),
+                    color: Colors.yellow.withAlpha((0.3 * 255).toInt()),
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
@@ -560,7 +643,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.red.withOpacity(0.3),
+                    color: Colors.red.withAlpha((0.3 * 255).toInt()),
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
@@ -598,7 +681,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.green.withOpacity(0.3),
+                    color: Colors.green.withAlpha((0.3 * 255).toInt()),
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
@@ -636,7 +719,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.blue.withOpacity(0.3),
+                    color: Colors.blue.withAlpha((0.3 * 255).toInt()),
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
@@ -777,9 +860,18 @@ class _TabataScreenState extends State<TabataScreen> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ExerciseHistoryScreen()),
+            );
+          }
+        },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: ''),
         ],
       ),
     );
