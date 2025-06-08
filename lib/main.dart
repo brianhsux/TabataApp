@@ -854,6 +854,13 @@ class _TabataScreenState extends State<TabataScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Tabata Timer'),
+        leading: _isRunning
+            ? IconButton(
+                icon: Icon(Icons.close),
+                tooltip: 'Stop',
+                onPressed: () => _stopTimer(userInitiated: true),
+              )
+            : null,
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
@@ -871,25 +878,25 @@ class _TabataScreenState extends State<TabataScreen> {
           Expanded(
             child: _isRunning ? _buildProgressView(state) : _buildSetupView(state),
           ),
-          // Start/Stop/Reset buttons
-          Padding(
-            padding: const EdgeInsets.all(16.0), // Increased padding
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Better spacing for buttons
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
-                  onPressed: _isRunning ? () => _stopTimer(userInitiated: true) : _startTimer,
-                  child: Text(_isRunning ? 'Stop' : 'Start', style: TextStyle(fontSize: 18)),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
-                  onPressed: _resetTimer,
-                  child: Text('Reset', style: TextStyle(fontSize: 18)),
-                ),
-              ],
+          if (!_isRunning)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
+                    onPressed: _startTimer,
+                    child: Text('Start', style: TextStyle(fontSize: 18)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
+                    onPressed: _resetTimer,
+                    child: Text('Reset', style: TextStyle(fontSize: 18)),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
