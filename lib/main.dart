@@ -263,13 +263,46 @@ class _TabataScreenState extends State<TabataScreen> {
     }
   }
 
-  void _stopTimer() async {
+  void _stopTimer({bool userInitiated = false}) async {
     await _stopBgm();
     _timer.onStopTimer();
     setState(() {
       _isRunning = false;
     });
     _stopElapsedTimer();
+    if (userInitiated) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('確定要停止運動嗎？'),
+          content: Text('這將結束本次運動，且不會儲存紀錄。'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('否'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('是'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) {
+        // 若使用者選否，繼續運動（從暫停秒數繼續）
+        // 不要 setState(_isRunning = true) 以避免 build 觸發 _remainingTime 重設
+        _isRunning = true;
+        _timer.onStartTimer();
+        if (_currentPhase == 'WORK') {
+          _playBgm('workout');
+        } else if (_currentPhase == 'REST') {
+          _playBgm('rest');
+        }
+        return;
+      }
+      // 若選是，直接 return，不存資料也不顯示結算 dialog
+      return;
+    }
     final state = Provider.of<TabataState>(context, listen: false);
     final endTime = DateTime.now();
     final duration = _elapsedSeconds;
@@ -846,7 +879,7 @@ class _TabataScreenState extends State<TabataScreen> {
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
-                  onPressed: _isRunning ? _stopTimer : _startTimer,
+                  onPressed: _isRunning ? () => _stopTimer(userInitiated: true) : _startTimer,
                   child: Text(_isRunning ? 'Stop' : 'Start', style: TextStyle(fontSize: 18)),
                 ),
                 ElevatedButton(
