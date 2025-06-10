@@ -653,6 +653,7 @@ class _TabataScreenState extends State<TabataScreen> {
                     setState(() {
                       _currentPhase = 'WORK';
                       _remainingTime = state.workTime + 1;
+                      _isRunning = true;
                     });
                     _timer.onStopTimer();
                     _timer.onResetTimer();
@@ -665,6 +666,7 @@ class _TabataScreenState extends State<TabataScreen> {
                         _currentCycle--;
                         _currentPhase = 'REST';
                         _remainingTime = state.restTime + 1;
+                        _isRunning = true;
                       });
                       _timer.onStopTimer();
                       _timer.onResetTimer();
@@ -697,6 +699,7 @@ class _TabataScreenState extends State<TabataScreen> {
                     setState(() {
                       _currentPhase = 'WORK';
                       _remainingTime = state.workTime + 1;
+                      _isRunning = true;
                     });
                     _timer.onStopTimer();
                     _timer.onResetTimer();
@@ -707,6 +710,7 @@ class _TabataScreenState extends State<TabataScreen> {
                     setState(() {
                       _currentPhase = 'REST';
                       _remainingTime = state.restTime + 1;
+                      _isRunning = true;
                     });
                     _timer.onStopTimer();
                     _timer.onResetTimer();
@@ -719,6 +723,7 @@ class _TabataScreenState extends State<TabataScreen> {
                         _currentCycle++;
                         _currentPhase = 'WORK';
                         _remainingTime = state.workTime + 1;
+                        _isRunning = true;
                       });
                       _timer.onStopTimer();
                       _timer.onResetTimer();
@@ -732,6 +737,7 @@ class _TabataScreenState extends State<TabataScreen> {
                         _currentCycle = 1;
                         _currentPhase = 'WORK';
                         _remainingTime = state.workTime + 1;
+                        _isRunning = true;
                       });
                       _timer.onStopTimer();
                       _timer.onResetTimer();
