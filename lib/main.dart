@@ -125,6 +125,7 @@ class _TabataScreenState extends State<TabataScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   AudioPlayer? _bgmPlayer;
   bool _isRunning = false;
+  bool _hasStarted = false;
   String _currentPhase = 'PREP';
   int _currentCycle = 1;
   int _currentSet = 1;
@@ -227,6 +228,7 @@ class _TabataScreenState extends State<TabataScreen> {
   }
 
   void _startTimer() {
+    _hasStarted = true;
     _startElapsedTimer(); // 運動一開始就啟動計時
     // Only set preset time if timer is not already running
     if (!_isRunning) {
@@ -316,7 +318,8 @@ class _TabataScreenState extends State<TabataScreen> {
         }
         return;
       }
-      // 若選是，直接 return，不存資料也不顯示結算 dialog
+      // 若選是，回到設置頁並重設 timer
+      _resetTimer();
       return;
     }
     final state = Provider.of<TabataState>(context, listen: false);
@@ -388,6 +391,7 @@ class _TabataScreenState extends State<TabataScreen> {
       _timer.setPresetTime(mSec: prepTimeMillis);
       setState(() {
         _isRunning = false;
+        _hasStarted = false;
         _currentPhase = 'PREP';
         _currentCycle = 1;
         _currentSet = 1;
@@ -507,7 +511,7 @@ class _TabataScreenState extends State<TabataScreen> {
     );
   }
 
-  Widget _buildProgressView(TabataState state) {
+  Widget _buildProgressView(TabataState state, {bool showElapsed = false}) {
     LinearGradient gradient;
     Color textColor;
     String phaseText;
@@ -625,7 +629,7 @@ class _TabataScreenState extends State<TabataScreen> {
             ],
           ),
           SizedBox(height: 24),
-          if (_isRunning)
+          if (showElapsed)
             Builder(
               builder: (context) {
                 final d = Duration(seconds: _elapsedSeconds);
@@ -959,26 +963,18 @@ class _TabataScreenState extends State<TabataScreen> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<TabataState>();
-    // Ensure _remainingTime is initialized correctly on phase or settings changes
-    if (!_isRunning && _currentPhase == 'PREP') {
+    // 只在初始狀態才重設 _remainingTime
+    bool showSetup = !_hasStarted && _currentPhase == 'PREP' && _currentCycle == 1 && _currentSet == 1;
+    if (showSetup) {
       if (_remainingTime != state.prepTime) {
         _remainingTime = state.prepTime;
       }
-    } else if (!_isRunning && _currentPhase == 'WORK') {
-      if (_remainingTime != state.workTime) {
-        _remainingTime = state.workTime;
-      }
-    } else if (!_isRunning && _currentPhase == 'REST') {
-      if (_remainingTime != state.restTime) {
-        _remainingTime = state.restTime;
-      }
     }
-
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Tabata Timer'),
-        leading: _isRunning
+        leading: !showSetup
             ? IconButton(
                 icon: Icon(Icons.close),
                 tooltip: 'Stop',
@@ -1000,9 +996,9 @@ class _TabataScreenState extends State<TabataScreen> {
       body: Column(
         children: [
           Expanded(
-            child: _isRunning ? _buildProgressView(state) : _buildSetupView(state),
+            child: showSetup ? _buildSetupView(state) : _buildProgressView(state, showElapsed: true),
           ),
-          if (!_isRunning)
+          if (showSetup)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -1069,6 +1065,7 @@ class _TabataScreenState extends State<TabataScreen> {
     });
   }
   void _resumeTimer() {
+    _hasStarted = true;
     _timer.onStartTimer();
     _startElapsedTimer();
     setState(() {
