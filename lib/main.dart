@@ -263,13 +263,29 @@ class _TabataScreenState extends State<TabataScreen> {
     }
   }
 
-  void _stopTimer({bool userInitiated = false}) async {
+  void _stopTimer({bool userInitiated = false, bool showReportDirectly = false}) async {
     await _stopBgm();
     _timer.onStopTimer();
     setState(() {
       _isRunning = false;
     });
     _stopElapsedTimer();
+    if (showReportDirectly) {
+      final state = Provider.of<TabataState>(context, listen: false);
+      final endTime = DateTime.now();
+      final duration = _elapsedSeconds;
+      final record = ExerciseRecord(
+        workoutTime: state.workTime,
+        restTime: state.restTime,
+        cycles: state.cycles,
+        sets: state.sets,
+        durationSeconds: duration,
+        dateTime: endTime.toIso8601String(),
+      );
+      await ExerciseDatabase.instance.insertRecord(record);
+      _showExerciseReportDialogFromRecord(record);
+      return;
+    }
     if (userInitiated) {
       final confirmed = await showDialog<bool>(
         context: context,
@@ -329,7 +345,7 @@ class _TabataScreenState extends State<TabataScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('運動時間： ${_formatDuration(record.durationSeconds)}'),
+            Text('運動時間：${_formatDuration(record.durationSeconds)}'),
             Text('Workout 秒數：$totalWorkout'),
             Text('Rest 秒數：$totalRest'),
             Text('Cycles：${record.cycles}'),
@@ -339,7 +355,10 @@ class _TabataScreenState extends State<TabataScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _resetTimer();
+            },
             child: Text('確定'),
           ),
         ],
@@ -426,7 +445,7 @@ class _TabataScreenState extends State<TabataScreen> {
           _timer.onStartTimer();
         } else {
           // 最後一輪workout結束時也要累積
-          _stopTimer();
+          _stopTimer(showReportDirectly: true);
           _resetTimer();
         }
       }
@@ -565,269 +584,374 @@ class _TabataScreenState extends State<TabataScreen> {
         ],
       ),
       margin: EdgeInsets.all(24),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(iconData, size: 64, color: textColor),
-            SizedBox(height: 16),
-            Text(
-              phaseText,
-              style: TextStyle(fontSize: 48, color: textColor, fontWeight: FontWeight.bold, letterSpacing: 2),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(iconData, size: 64, color: textColor),
+          SizedBox(height: 16),
+          Text(
+            phaseText,
+            style: TextStyle(fontSize: 48, color: textColor, fontWeight: FontWeight.bold, letterSpacing: 2),
+          ),
+          Text(
+            displayText,
+            style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor, shadows: [
+              Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
+            ]),
+          ),
+          SizedBox(height: 20),
+          // Cycle and Set on separate lines
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.repeat, color: textColor),
+              SizedBox(width: 8),
+              Text(
+                'Cycle:  $_currentCycle / ${state.cycles}',
+                style: TextStyle(fontSize: 24, color: textColor),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.layers, color: textColor),
+              SizedBox(width: 8),
+              Text(
+                'Set:  $_currentSet / ${state.sets}',
+                style: TextStyle(fontSize: 24, color: textColor),
+              ),
+            ],
+          ),
+          SizedBox(height: 24),
+          if (_isRunning)
+            Builder(
+              builder: (context) {
+                final d = Duration(seconds: _elapsedSeconds);
+                String twoDigits(int n) => n.toString().padLeft(2, '0');
+                final timeStr = '${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}';
+                return Text('本次運動已進行：$timeStr', style: TextStyle(fontSize: 18, color: Colors.blueGrey));
+              },
             ),
-            Text(
-              displayText,
-              style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor, shadows: [
-                Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
-              ]),
-            ),
-            SizedBox(height: 20),
-            // Cycle and Set on separate lines
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.repeat, color: textColor),
-                SizedBox(width: 8),
-                Text(
-                  'Cycle:  $_currentCycle / ${state.cycles}',
-                  style: TextStyle(fontSize: 24, color: textColor),
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.layers, color: textColor),
-                SizedBox(width: 8),
-                Text(
-                  'Set:  $_currentSet / ${state.sets}',
-                  style: TextStyle(fontSize: 24, color: textColor),
-                ),
-              ],
-            ),
-            SizedBox(height: 24),
-            if (_isRunning)
-              Builder(
-                builder: (context) {
-                  final d = Duration(seconds: _elapsedSeconds);
-                  String twoDigits(int n) => n.toString().padLeft(2, '0');
-                  final timeStr = '${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}';
-                  return Text('本次運動已進行：$timeStr', style: TextStyle(fontSize: 18, color: Colors.blueGrey));
+          SizedBox(height: 24),
+          // 控制按鈕
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // 上一個狀態
+              IconButton(
+                icon: Icon(Icons.skip_previous, size: 36, color: textColor),
+                tooltip: '上一個狀態',
+                onPressed: () {
+                  final state = context.read<TabataState>();
+                  if (_currentPhase == 'REST') {
+                    setState(() {
+                      _currentPhase = 'WORK';
+                      _remainingTime = state.workTime + 1;
+                    });
+                    _timer.onStopTimer();
+                    _timer.onResetTimer();
+                    _timer.setPresetTime(mSec: (state.workTime + 1) * 1000);
+                    _timer.onStartTimer();
+                    _playBgm('workout');
+                  } else if (_currentPhase == 'WORK') {
+                    if (_currentCycle > 1) {
+                      setState(() {
+                        _currentCycle--;
+                        _currentPhase = 'REST';
+                        _remainingTime = state.restTime + 1;
+                      });
+                      _timer.onStopTimer();
+                      _timer.onResetTimer();
+                      _timer.setPresetTime(mSec: (state.restTime + 1) * 1000);
+                      _timer.onStartTimer();
+                      _playBgm('rest');
+                    }
+                  }
                 },
               ),
-          ],
-        ),
+              // 暫停/繼續按鈕
+              IconButton(
+                icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow, size: 48, color: textColor),
+                tooltip: _isRunning ? '暫停' : '繼續',
+                onPressed: () {
+                  if (_isRunning) {
+                    _pauseTimer();
+                  } else {
+                    _resumeTimer();
+                  }
+                },
+              ),
+              // 下一個狀態
+              IconButton(
+                icon: Icon(Icons.skip_next, size: 36, color: textColor),
+                tooltip: '下一個狀態',
+                onPressed: () {
+                  final state = context.read<TabataState>();
+                  if (_currentPhase == 'PREP') {
+                    setState(() {
+                      _currentPhase = 'WORK';
+                      _remainingTime = state.workTime + 1;
+                    });
+                    _timer.onStopTimer();
+                    _timer.onResetTimer();
+                    _timer.setPresetTime(mSec: (state.workTime + 1) * 1000);
+                    _timer.onStartTimer();
+                    _playBgm('workout');
+                  } else if (_currentPhase == 'WORK') {
+                    setState(() {
+                      _currentPhase = 'REST';
+                      _remainingTime = state.restTime + 1;
+                    });
+                    _timer.onStopTimer();
+                    _timer.onResetTimer();
+                    _timer.setPresetTime(mSec: (state.restTime + 1) * 1000);
+                    _timer.onStartTimer();
+                    _playBgm('rest');
+                  } else if (_currentPhase == 'REST') {
+                    if (_currentCycle < state.cycles) {
+                      setState(() {
+                        _currentCycle++;
+                        _currentPhase = 'WORK';
+                        _remainingTime = state.workTime + 1;
+                      });
+                      _timer.onStopTimer();
+                      _timer.onResetTimer();
+                      _timer.setPresetTime(mSec: (state.workTime + 1) * 1000);
+                      _timer.onStartTimer();
+                      _playBgm('workout');
+                    } else if (_currentCycle == state.cycles && _currentSet < state.sets) {
+                      // 進入下一個 set
+                      setState(() {
+                        _currentSet++;
+                        _currentCycle = 1;
+                        _currentPhase = 'WORK';
+                        _remainingTime = state.workTime + 1;
+                      });
+                      _timer.onStopTimer();
+                      _timer.onResetTimer();
+                      _timer.setPresetTime(mSec: (state.workTime + 1) * 1000);
+                      _timer.onStartTimer();
+                      _playBgm('workout');
+                    } else if (_currentCycle == state.cycles && _currentSet == state.sets) {
+                      // 最後一個 cycle 和最後一個 set，直接顯示結算報告
+                      _stopTimer(showReportDirectly: true);
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildSetupView(TabataState state) {
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Preparation block
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.yellow.shade200, Colors.orange.shade200],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Preparation block
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.yellow.shade200, Colors.orange.shade200],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.yellow.withAlpha((0.3 * 255).toInt()),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
                 ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.yellow.withAlpha((0.3 * 255).toInt()),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.timer, color: Colors.orange.shade900),
-                  SizedBox(width: 10),
-                  Text('Prep', style: TextStyle(fontSize: 24, color: Colors.orange.shade900, fontWeight: FontWeight.bold)),
-                  SizedBox(width: 10),
-                  Text(
-                    state.prepTime.toString(),
-                    style: TextStyle(fontSize: 24, color: Colors.orange.shade900, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(width: 10),
-                  IconButton(
-                    icon: Icon(Icons.settings, color: Colors.orange.shade900),
-                    onPressed: () => _showEditDialog('Prep', state.prepTime, state.updatePrepTime),
-                  ),
-                ],
-              ),
+              ],
             ),
-            // Exercise block
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.red.shade400, Colors.pink.shade200],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.timer, color: Colors.orange.shade900),
+                SizedBox(width: 10),
+                Text('Prep', style: TextStyle(fontSize: 24, color: Colors.orange.shade900, fontWeight: FontWeight.bold)),
+                SizedBox(width: 10),
+                Text(
+                  state.prepTime.toString(),
+                  style: TextStyle(fontSize: 24, color: Colors.orange.shade900, fontWeight: FontWeight.bold),
                 ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.red.withAlpha((0.3 * 255).toInt()),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.fitness_center, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('Work', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                  SizedBox(width: 10),
-                  Text(
-                    state.workTime.toString(),
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(width: 10),
-                  IconButton(
-                    icon: Icon(Icons.settings, color: Colors.white),
-                    onPressed: () => _showEditDialog('Work', state.workTime, state.updateWorkTime),
-                  ),
-                ],
-              ),
-            ),
-            // Rest block
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.green.shade400, Colors.teal.shade200],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                SizedBox(width: 10),
+                IconButton(
+                  icon: Icon(Icons.settings, color: Colors.orange.shade900),
+                  onPressed: () => _showEditDialog('Prep', state.prepTime, state.updatePrepTime),
                 ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.green.withAlpha((0.3 * 255).toInt()),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.self_improvement, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('Rest', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                  SizedBox(width: 10),
-                  Text(
-                    state.restTime.toString(),
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(width: 10),
-                  IconButton(
-                    icon: Icon(Icons.settings, color: Colors.white),
-                    onPressed: () => _showEditDialog('Rest', state.restTime, state.updateRestTime),
-                  ),
-                ],
-              ),
+              ],
             ),
-            // Bottom cycles and sets block
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.indigo.shade200],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+          ),
+          // Exercise block
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.red.shade400, Colors.pink.shade200],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.red.withAlpha((0.3 * 255).toInt()),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
                 ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blue.withAlpha((0.3 * 255).toInt()),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Cycles block
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.repeat, color: Colors.white),
-                        SizedBox(height: 10),
-                        Text('Cycles', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
-                        Text(
-                          state.cycles.toString(),
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.remove, color: Colors.white),
-                              onPressed: () {
-                                if (state.cycles > 1) state.updateCycles(state.cycles - 1);
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.add, color: Colors.white),
-                              onPressed: () => state.updateCycles(state.cycles + 1),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Sets block
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.layers, color: Colors.white),
-                        SizedBox(height: 10),
-                        Text('Sets', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
-                        Text(
-                          state.sets.toString(),
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.remove, color: Colors.white),
-                              onPressed: () {
-                                if (state.sets > 1) state.updateSets(state.sets - 1);
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.add, color: Colors.white),
-                              onPressed: () => state.updateSets(state.sets + 1),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
-          ],
-        ),
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.fitness_center, color: Colors.white),
+                SizedBox(width: 10),
+                Text('Work', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                SizedBox(width: 10),
+                Text(
+                  state.workTime.toString(),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 10),
+                IconButton(
+                  icon: Icon(Icons.settings, color: Colors.white),
+                  onPressed: () => _showEditDialog('Work', state.workTime, state.updateWorkTime),
+                ),
+              ],
+            ),
+          ),
+          // Rest block
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.green.shade400, Colors.teal.shade200],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.green.withAlpha((0.3 * 255).toInt()),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.self_improvement, color: Colors.white),
+                SizedBox(width: 10),
+                Text('Rest', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                SizedBox(width: 10),
+                Text(
+                  state.restTime.toString(),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 10),
+                IconButton(
+                  icon: Icon(Icons.settings, color: Colors.white),
+                  onPressed: () => _showEditDialog('Rest', state.restTime, state.updateRestTime),
+                ),
+              ],
+            ),
+          ),
+          // Bottom cycles and sets block
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blue.shade400, Colors.indigo.shade200],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.withAlpha((0.3 * 255).toInt()),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Cycles block
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.repeat, color: Colors.white),
+                      SizedBox(height: 10),
+                      Text('Cycles', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
+                      Text(
+                        state.cycles.toString(),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.remove, color: Colors.white),
+                            onPressed: () {
+                              if (state.cycles > 1) state.updateCycles(state.cycles - 1);
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add, color: Colors.white),
+                            onPressed: () => state.updateCycles(state.cycles + 1),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Sets block
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.layers, color: Colors.white),
+                      SizedBox(height: 10),
+                      Text('Sets', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
+                      Text(
+                        state.sets.toString(),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.remove, color: Colors.white),
+                            onPressed: () {
+                              if (state.sets > 1) state.updateSets(state.sets - 1);
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add, color: Colors.white),
+                            onPressed: () => state.updateSets(state.sets + 1),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -933,6 +1057,27 @@ class _TabataScreenState extends State<TabataScreen> {
       await _bgmPlayer!.stop();
       await _bgmPlayer!.dispose();
       _bgmPlayer = null;
+    }
+  }
+
+  void _pauseTimer() {
+    _timer.onStopTimer();
+    _stopElapsedTimer();
+    _stopBgm();
+    setState(() {
+      _isRunning = false;
+    });
+  }
+  void _resumeTimer() {
+    _timer.onStartTimer();
+    _startElapsedTimer();
+    setState(() {
+      _isRunning = true;
+    });
+    if (_currentPhase == 'WORK') {
+      _playBgm('workout');
+    } else if (_currentPhase == 'REST') {
+      _playBgm('rest');
     }
   }
 }
