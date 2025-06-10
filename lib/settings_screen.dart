@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'main.dart';
 
 class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final tabataState = context.watch<TabataState>();
@@ -32,6 +34,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               onPressed: () async {
                 await tabataState.resetPreferences();
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('已重設為預設值')),
                 );
