@@ -7,6 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'settings_screen.dart';
 import 'exercise_db.dart';
 import 'exercise_history_screen.dart'; // <-- 新增匯入
+import 'widgets/progress_view.dart';
+import 'widgets/setup_view.dart';
+import 'widgets/countdown_controls.dart';
+import 'widgets/exercise_report_dialog.dart';
+import 'widgets/cycle_set_block.dart';
 
 void main() {
   runApp(
