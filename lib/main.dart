@@ -606,11 +606,27 @@ class _TabataScreenState extends State<TabataScreen> {
             phaseText,
             style: TextStyle(fontSize: 48, color: textColor, fontWeight: FontWeight.bold, letterSpacing: 2),
           ),
-          Text(
-            displayText,
-            style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor, shadows: [
-              Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
-            ]),
+          // 圓形倒數進度條
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 180,
+                height: 180,
+                child: CircularProgressIndicator(
+                  value: _getProgress(),
+                  strokeWidth: 14,
+                  backgroundColor: Colors.white24,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              Text(
+                displayText,
+                style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor, shadows: [
+                  Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
+                ]),
+              ),
+            ],
           ),
           SizedBox(height: 20),
           // Cycle and Set on separate lines
@@ -1123,5 +1139,24 @@ class _TabataScreenState extends State<TabataScreen> {
     } else if (_currentPhase == 'REST') {
       _playBgm('rest');
     }
+  }
+
+  double _getProgress() {
+    int total = 1;
+    final state = context.read<TabataState>();
+    switch (_currentPhase) {
+      case 'PREP':
+        total = state.prepTime + 1;
+        break;
+      case 'WORK':
+        total = state.workTime + 1;
+        break;
+      case 'REST':
+        total = state.restTime + 1;
+        break;
+      default:
+        total = _remainingTime > 0 ? _remainingTime : 1;
+    }
+    return total > 0 ? (total - _remainingTime) / total : 0.0;
   }
 }
