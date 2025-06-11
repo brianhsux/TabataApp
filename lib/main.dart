@@ -23,6 +23,8 @@ void main() {
 }
 
 class TabataApp extends StatelessWidget {
+  const TabataApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -121,6 +123,8 @@ class TabataState with ChangeNotifier {
 }
 
 class TabataScreen extends StatefulWidget {
+  const TabataScreen({super.key});
+
   @override
   _TabataScreenState createState() => _TabataScreenState();
 }
@@ -1012,20 +1016,52 @@ class _TabataScreenState extends State<TabataScreen> {
           if (showSetup)
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
+              child: Center(
+                child: SizedBox(
+                  width: 240,
+                  height: 64,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero, // 讓 Ink 填滿
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      elevation: 8,
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.black45,
+                    ).copyWith(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color?>((states) => null),
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                    ),
                     onPressed: _startTimer,
-                    child: Text('Start', style: TextStyle(fontSize: 18)),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.pinkAccent, Colors.deepPurpleAccent],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      child: Container(
+                        height: 64,
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Start',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(blurRadius: 8, color: Colors.black26, offset: Offset(0, 2)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
-                    onPressed: _resetTimer,
-                    child: Text('Reset', style: TextStyle(fontSize: 18)),
-                  ),
-                ],
+                ),
               ),
             ),
         ],
