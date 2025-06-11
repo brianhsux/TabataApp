@@ -151,6 +151,8 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
           _focusedDay = focusedDay;
         });
       },
+      availableCalendarFormats: const {CalendarFormat.month: '月'},
+      calendarFormat: CalendarFormat.month,
       calendarStyle: CalendarStyle(
         todayDecoration: BoxDecoration(
           color: Colors.blueAccent,
