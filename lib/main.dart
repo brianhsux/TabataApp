@@ -144,6 +144,7 @@ class _TabataScreenState extends State<TabataScreen> {
   // 新增：運動進行秒數與 Timer
   Timer? _elapsedTimer;
   int _elapsedSeconds = 0;
+  int _selectedIndex = 0; // 0: timer, 1: history
 
   @override
   void initState() {
@@ -1002,29 +1003,8 @@ class _TabataScreenState extends State<TabataScreen> {
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Tabata Timer'),
-        leading: !showSetup
-            ? IconButton(
-                icon: Icon(Icons.close),
-                tooltip: 'Stop',
-                onPressed: () => _stopTimer(userInitiated: true),
-              )
-            : null,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsScreen()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Column(
+    final List<Widget> _pages = [
+      Column(
         children: [
           Expanded(
             child: showSetup ? _buildSetupView(state) : _buildProgressView(state, showElapsed: true),
@@ -1082,15 +1062,38 @@ class _TabataScreenState extends State<TabataScreen> {
             ),
         ],
       ),
+      ExerciseHistoryScreen(),
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Tabata Timer'),
+        leading: !showSetup
+            ? IconButton(
+                icon: Icon(Icons.close),
+                tooltip: 'Stop',
+                onPressed: () => _stopTimer(userInitiated: true),
+              )
+            : null,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
+            },
+          ),
+        ],
+      ),
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
+        currentIndex: _selectedIndex,
         onTap: (index) {
-          if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ExerciseHistoryScreen()),
-            );
-          }
+          setState(() {
+            _selectedIndex = index;
+          });
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),

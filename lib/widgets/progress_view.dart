@@ -57,11 +57,27 @@ class ProgressViewWidget extends StatelessWidget {
             phaseText,
             style: TextStyle(fontSize: 48, color: textColor, fontWeight: FontWeight.bold, letterSpacing: 2),
           ),
-          Text(
-            displayText,
-            style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor, shadows: [
-              Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
-            ]),
+          // 圓形倒數進度條
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 180,
+                height: 180,
+                child: CircularProgressIndicator(
+                  value: _getProgress(currentPhase, remainingTime, totalCycles, totalSets),
+                  strokeWidth: 14,
+                  backgroundColor: Colors.white24,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              Text(
+                displayText,
+                style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor, shadows: [
+                  Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
+                ]),
+              ),
+            ],
           ),
           SizedBox(height: 20),
           Row(
@@ -96,5 +112,26 @@ class ProgressViewWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  double _getProgress(String phase, int remaining, int totalCycles, int totalSets) {
+    // 根據 phase 決定總秒數
+    int total = 1;
+    switch (phase) {
+      case 'PREP':
+        total = (remaining > 0) ? remaining : 1;
+        break;
+      case 'WORK':
+        total = (remaining > 0) ? remaining : 1;
+        break;
+      case 'REST':
+        total = (remaining > 0) ? remaining : 1;
+        break;
+      default:
+        total = (remaining > 0) ? remaining : 1;
+    }
+    // 這裡需要外部傳入 phase 對應的總秒數，暫時用 remaining 當作 placeholder
+    // 實際應用時應該傳入 phase 對應的總時間
+    return total > 0 ? (total - remaining) / total : 0.0;
   }
 } 
