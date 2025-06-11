@@ -531,7 +531,11 @@ class _TabataScreenState extends State<TabataScreen> {
     String displayText = '';
     if (_currentPhase == 'PREP' || _currentPhase == 'REST') {
       if (_remainingTime == 0) {
-        displayText = 'Go';
+        // 最後一個cycle、最後一個set、rest狀態且倒數到0時顯示Done
+        final isLastRest = _currentPhase == 'REST' &&
+          _currentCycle == state.cycles &&
+          _currentSet == state.sets;
+        displayText = isLastRest ? 'Done' : 'Go';
       } else {
         displayText = displayTime.toString();
       }
@@ -612,20 +616,25 @@ class _TabataScreenState extends State<TabataScreen> {
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 180,
-                height: 180,
+                width: 240,
+                height: 240,
                 child: CircularProgressIndicator(
                   value: _getProgress(),
-                  strokeWidth: 14,
+                  strokeWidth: 16,
                   backgroundColor: Colors.white24,
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               ),
               Text(
                 displayText,
-                style: TextStyle(fontSize: 120, fontWeight: FontWeight.bold, color: textColor, shadows: [
-                  Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
-                ]),
+                style: TextStyle(
+                  fontSize: displayText == 'Done' ? 72 : 120,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                  shadows: [
+                    Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
+                  ],
+                ),
               ),
             ],
           ),
