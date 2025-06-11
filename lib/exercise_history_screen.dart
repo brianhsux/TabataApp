@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'exercise_db.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class ExerciseHistoryScreen extends StatefulWidget {
   const ExerciseHistoryScreen({super.key});
@@ -11,6 +12,10 @@ class ExerciseHistoryScreen extends StatefulWidget {
 class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
   late Future<List<ExerciseRecord>> _recordsFuture;
   final Set<int> _selectedIds = {};
+  Set<DateTime> _exerciseDays = {};
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+  List<ExerciseRecord> _allRecords = [];
 
   @override
   void initState() {
@@ -66,59 +71,117 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('讀取失敗: \\${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('尚無運動紀錄'));
+            return Column(
+              children: [
+                _buildCalendar([]),
+                Expanded(child: Center(child: Text('尚無運動紀錄'))),
+              ],
+            );
           }
           final records = snapshot.data!;
-          return ListView.separated(
-            itemCount: records.length,
-            separatorBuilder: (_, __) => Divider(),
-            itemBuilder: (context, i) {
-              final r = records[i];
-              final totalWorkout = r.workoutTime * r.cycles * r.sets;
-              final totalRest = r.restTime * r.cycles * r.sets;
-              final selected = r.id != null && _selectedIds.contains(r.id);
-              return ListTile(
-                leading: r.id != null
-                    ? Checkbox(
-                        value: selected,
-                        onChanged: (checked) {
-                          setState(() {
-                            if (checked == true) {
-                              _selectedIds.add(r.id!);
-                            } else {
-                              _selectedIds.remove(r.id);
-                            }
-                          });
-                        },
-                      )
-                    : null,
-                title: Text('運動時間：${_formatDuration(r.durationSeconds)}'),
-                subtitle: Text('Workout: ${totalWorkout}s, Rest: ${totalRest}s, Cycles: ${r.cycles}, Sets: ${r.sets}\n${_formatDateTime(r.dateTime)}'),
-                onLongPress: r.id != null
-                    ? () {
-                        setState(() {
-                          if (_selectedIds.contains(r.id)) {
-                            _selectedIds.remove(r.id);
-                          } else {
-                            _selectedIds.add(r.id!);
-                          }
-                        });
-                      }
-                    : null,
-                onTap: r.id != null && _selectedIds.isNotEmpty
-                    ? () {
-                        setState(() {
-                          if (_selectedIds.contains(r.id)) {
-                            _selectedIds.remove(r.id);
-                          } else {
-                            _selectedIds.add(r.id!);
-                          }
-                        });
-                      }
-                    : null,
-              );
-            },
+          _allRecords = records;
+          _exerciseDays = records.map((r) => DateTime.parse(r.dateTime)).map((d) => DateTime(d.year, d.month, d.day)).toSet();
+          final selectedDay = _selectedDay ?? DateTime.now();
+          final filteredRecords = records.where((r) {
+            final d = DateTime.parse(r.dateTime);
+            return d.year == selectedDay.year && d.month == selectedDay.month && d.day == selectedDay.day;
+          }).toList();
+          return Column(
+            children: [
+              _buildCalendar(records),
+              Expanded(
+                child: filteredRecords.isEmpty
+                  ? Center(child: Text('這天沒有運動紀錄'))
+                  : ListView.separated(
+                      itemCount: filteredRecords.length,
+                      separatorBuilder: (_, __) => Divider(),
+                      itemBuilder: (context, i) {
+                        final r = filteredRecords[i];
+                        final totalWorkout = r.workoutTime * r.cycles * r.sets;
+                        final totalRest = r.restTime * r.cycles * r.sets;
+                        final selected = r.id != null && _selectedIds.contains(r.id);
+                        return ListTile(
+                          leading: r.id != null
+                              ? Checkbox(
+                                  value: selected,
+                                  onChanged: (checked) {
+                                    setState(() {
+                                      if (checked == true) {
+                                        _selectedIds.add(r.id!);
+                                      } else {
+                                        _selectedIds.remove(r.id);
+                                      }
+                                    });
+                                  },
+                                )
+                              : null,
+                          title: Text('運動時間：${_formatDuration(r.durationSeconds)}'),
+                          subtitle: Text('Workout: ${totalWorkout}s, Rest: ${totalRest}s, Cycles: ${r.cycles}, Sets: ${r.sets}\n${_formatDateTime(r.dateTime)}'),
+                          onLongPress: r.id != null
+                              ? () {
+                                  setState(() {
+                                    if (_selectedIds.contains(r.id)) {
+                                      _selectedIds.remove(r.id);
+                                    } else {
+                                      _selectedIds.add(r.id!);
+                                    }
+                                  });
+                                }
+                              : null,
+                        );
+                      },
+                    ),
+              ),
+            ],
           );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCalendar(List<ExerciseRecord> records) {
+    return TableCalendar(
+      firstDay: DateTime.utc(2020, 1, 1),
+      lastDay: DateTime.utc(2100, 12, 31),
+      focusedDay: _focusedDay,
+      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+      onDaySelected: (selectedDay, focusedDay) {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+        });
+      },
+      calendarStyle: CalendarStyle(
+        todayDecoration: BoxDecoration(
+          color: Colors.blueAccent,
+          shape: BoxShape.circle,
+        ),
+        selectedDecoration: BoxDecoration(
+          color: Colors.pinkAccent,
+          shape: BoxShape.circle,
+        ),
+        markerDecoration: BoxDecoration(
+          color: Colors.orange,
+          shape: BoxShape.circle,
+        ),
+      ),
+      calendarBuilders: CalendarBuilders(
+        markerBuilder: (context, day, events) {
+          final isExerciseDay = _exerciseDays.contains(DateTime(day.year, day.month, day.day));
+          if (isExerciseDay) {
+            return Positioned(
+              bottom: 1,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            );
+          }
+          return null;
         },
       ),
     );
