@@ -1457,9 +1457,8 @@ class _TabataScreenState extends State<TabataScreen> {
           ),
         ],
       ),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
           if (_isBannerLoaded && _bannerAd != null)
             Container(
@@ -1467,18 +1466,19 @@ class _TabataScreenState extends State<TabataScreen> {
               height: _bannerAd!.size.height.toDouble(),
               child: AdWidget(ad: _bannerAd!),
             ),
-          BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            onTap: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            items: [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.history), label: ''),
-            ],
-          ),
+          Expanded(child: _pages[_selectedIndex]),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: ''),
         ],
       ),
     );
