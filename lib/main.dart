@@ -799,77 +799,50 @@ class _TabataScreenState extends State<TabataScreen> {
   Widget _buildTemplateControls(TabataState state) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: () async {
-              String? name = await showDialog<String>(
-                context: context,
-                builder: (context) {
-                  TextEditingController controller = TextEditingController();
-                  return AlertDialog(
-                    title: Text('輸入活動名稱'),
-                    content: TextField(
-                      controller: controller,
-                      decoration: InputDecoration(hintText: '活動名稱'),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, null),
-                        child: Text('取消'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, controller.text.trim()),
-                        child: Text('建立'),
-                      ),
-                    ],
-                  );
-                },
-              );
-              if (name != null && name.isNotEmpty) {
-                final preset = WorkoutPreset(
-                  name: name,
-                  prepTime: state.prepTime,
-                  workTime: state.workTime,
-                  restTime: state.restTime,
-                  cycles: state.cycles,
-                  sets: state.sets,
-                );
-                await ExerciseDatabase.instance.insertPreset(preset);
-                setState(() {
-                  _currentPresetName = name;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已建立活動 $name')));
-              }
-            },
+          // 目前活動名稱以卡片質感顯示，有副標題、漸層、圓角、陰影
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.purpleAccent, Colors.deepPurpleAccent],
+                  colors: [Colors.deepPurple.shade100, Colors.deepPurple.shade300],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(32),
+                borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.deepPurple.withOpacity(0.18),
-                    blurRadius: 12,
-                    offset: Offset(0, 4),
+                    blurRadius: 16,
+                    offset: Offset(0, 6),
                   ),
                 ],
               ),
-              child: Row(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add_circle_outline, color: Colors.white, size: 28),
-                  SizedBox(width: 10),
                   Text(
-                    '建立新活動',
+                    '目前活動',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.deepPurple.shade700,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    _currentPresetName ?? '尚未選擇活動',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.deepPurple.shade900,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 28,
                       letterSpacing: 1.2,
                     ),
                   ),
@@ -877,105 +850,180 @@ class _TabataScreenState extends State<TabataScreen> {
               ),
             ),
           ),
-          SizedBox(width: 16),
-          Expanded(
-            child: FutureBuilder<List<WorkoutPreset>>(
-              future: ExerciseDatabase.instance.fetchAllPresets(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return SizedBox();
-                final presets = snapshot.data!;
-                final selectedPreset = presets.where((p) => p.name == _currentPresetName).isNotEmpty
-                    ? presets.firstWhere((p) => p.name == _currentPresetName)
-                    : null;
-                return DropdownButtonHideUnderline(
-                  child: DropdownButton2<WorkoutPreset>(
-                    isExpanded: true,
-                    customButton: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.blue.shade200, Colors.blue.shade400],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(32),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.withOpacity(0.12),
-                            blurRadius: 12,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Icon(Icons.bookmark, color: Colors.white),
-                          SizedBox(width: 12),
-                          Text(
-                            _currentPresetName ?? '選擇模板',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 20,
-                              letterSpacing: 1.2,
+          // 切換活動與建立新活動按鈕同一行
+          Row(
+            children: [
+              // 切換活動下拉選單
+              FutureBuilder<List<WorkoutPreset>>(
+                future: ExerciseDatabase.instance.fetchAllPresets(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return SizedBox();
+                  final presets = snapshot.data!;
+                  final selectedPreset = presets.where((p) => p.name == _currentPresetName).isNotEmpty
+                      ? presets.firstWhere((p) => p.name == _currentPresetName)
+                      : null;
+                  return DropdownButtonHideUnderline(
+                    child: DropdownButton2<WorkoutPreset>(
+                      customButton: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.deepPurple.withOpacity(0.10),
+                              blurRadius: 8,
+                              offset: Offset(0, 2),
                             ),
-                          ),
-                          Spacer(),
-                          Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white, size: 32),
-                        ],
-                      ),
-                    ),
-                    dropdownStyleData: DropdownStyleData(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.withOpacity(0.08),
-                            blurRadius: 8,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                    ),
-                    items: presets.map((preset) {
-                      return DropdownMenuItem<WorkoutPreset>(
-                        value: preset,
+                          ],
+                          border: Border.all(color: Colors.deepPurpleAccent, width: 1.2),
+                        ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.bookmark, color: Colors.blueAccent),
+                            Icon(Icons.swap_horiz, color: Colors.deepPurpleAccent),
                             SizedBox(width: 8),
                             Text(
-                              preset.name,
+                              '切換活動',
                               style: TextStyle(
+                                color: Colors.deepPurpleAccent,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.blueAccent,
-                                fontSize: 18,
+                                fontSize: 16,
                               ),
+                            ),
+                            Icon(Icons.keyboard_arrow_down_rounded, color: Colors.deepPurpleAccent),
+                          ],
+                        ),
+                      ),
+                      dropdownStyleData: DropdownStyleData(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.deepPurple.withOpacity(0.08),
+                              blurRadius: 8,
+                              offset: Offset(0, 2),
                             ),
                           ],
                         ),
+                      ),
+                      items: presets.map((preset) {
+                        return DropdownMenuItem<WorkoutPreset>(
+                          value: preset,
+                          child: Row(
+                            children: [
+                              Icon(Icons.bookmark, color: Colors.deepPurpleAccent),
+                              SizedBox(width: 8),
+                              Text(
+                                preset.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.deepPurpleAccent,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      value: selectedPreset,
+                      onChanged: (preset) {
+                        if (preset != null) {
+                          state.updatePrepTime(preset.prepTime);
+                          state.updateWorkTime(preset.workTime);
+                          state.updateRestTime(preset.restTime);
+                          state.updateCycles(preset.cycles);
+                          state.updateSets(preset.sets);
+                          setState(() {
+                            _currentPresetName = preset.name;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已載入活動 ${preset.name}')));
+                        }
+                      },
+                    ),
+                  );
+                },
+              ),
+              SizedBox(width: 16),
+              // 建立新活動按鈕
+              GestureDetector(
+                onTap: () async {
+                  String? name = await showDialog<String>(
+                    context: context,
+                    builder: (context) {
+                      TextEditingController controller = TextEditingController();
+                      return AlertDialog(
+                        title: Text('輸入活動名稱'),
+                        content: TextField(
+                          controller: controller,
+                          decoration: InputDecoration(hintText: '活動名稱'),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, null),
+                            child: Text('取消'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, controller.text.trim()),
+                            child: Text('建立'),
+                          ),
+                        ],
                       );
-                    }).toList(),
-                    value: selectedPreset,
-                    onChanged: (preset) {
-                      if (preset != null) {
-                        state.updatePrepTime(preset.prepTime);
-                        state.updateWorkTime(preset.workTime);
-                        state.updateRestTime(preset.restTime);
-                        state.updateCycles(preset.cycles);
-                        state.updateSets(preset.sets);
-                        setState(() {
-                          _currentPresetName = preset.name;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已載入模板 ${preset.name}')));
-                      }
                     },
+                  );
+                  if (name != null && name.isNotEmpty) {
+                    final preset = WorkoutPreset(
+                      name: name,
+                      prepTime: state.prepTime,
+                      workTime: state.workTime,
+                      restTime: state.restTime,
+                      cycles: state.cycles,
+                      sets: state.sets,
+                    );
+                    await ExerciseDatabase.instance.insertPreset(preset);
+                    setState(() {
+                      _currentPresetName = name;
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已建立活動 $name')));
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.purpleAccent, Colors.deepPurpleAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.deepPurple.withOpacity(0.18),
+                        blurRadius: 12,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add_circle_outline, color: Colors.white, size: 28),
+                      SizedBox(width: 10),
+                      Text(
+                        '建立新活動',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
