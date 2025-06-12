@@ -13,8 +13,11 @@ import 'widgets/countdown_controls.dart';
 import 'widgets/exercise_report_dialog.dart';
 import 'widgets/cycle_set_block.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MobileAds.instance.initialize();
   runApp(
     ChangeNotifierProvider(
       create: (context) => TabataState(),
@@ -147,6 +150,8 @@ class _TabataScreenState extends State<TabataScreen> {
   int _elapsedSeconds = 0;
   int _selectedIndex = 0; // 0: timer, 1: history
   String? _currentPresetName;
+  BannerAd? _bannerAd;
+  bool _isBannerLoaded = false;
 
   @override
   void initState() {
@@ -170,6 +175,24 @@ class _TabataScreenState extends State<TabataScreen> {
         });
       }
     });
+
+    // 初始化 Banner 廣告
+    _bannerAd = BannerAd(
+      //adUnitId: 'ca-app-pub-6481271799327768/7011967574',
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111', // 測試用
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isBannerLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    )..load();
   }
   
   void _initTimer() {
@@ -236,6 +259,7 @@ class _TabataScreenState extends State<TabataScreen> {
     _audioPlayer.dispose();
     _bgmPlayer?.dispose();
     _stopElapsedTimer(); // 確保釋放 Timer
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -1434,16 +1458,27 @@ class _TabataScreenState extends State<TabataScreen> {
         ],
       ),
       body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: ''),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_isBannerLoaded && _bannerAd != null)
+            Container(
+              width: _bannerAd!.size.width.toDouble(),
+              height: _bannerAd!.size.height.toDouble(),
+              child: AdWidget(ad: _bannerAd!),
+            ),
+          BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            items: [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+              BottomNavigationBarItem(icon: Icon(Icons.history), label: ''),
+            ],
+          ),
         ],
       ),
     );
