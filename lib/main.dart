@@ -1269,47 +1269,45 @@ class _TabataScreenState extends State<TabataScreen> {
           if (showSetup)
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: SizedBox(
-                  width: 240,
-                  height: 64,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.zero, // 讓 Ink 填滿
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                      elevation: 8,
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.black45,
-                    ).copyWith(
-                      backgroundColor: MaterialStateProperty.resolveWith<Color?>((states) => null),
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
+              child: SizedBox(
+                width: double.infinity,
+                height: 64,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.zero, // 讓 Ink 填滿
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32),
                     ),
-                    onPressed: _startTimer,
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.pinkAccent, Colors.deepPurpleAccent],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(32),
+                    elevation: 8,
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.black45,
+                  ).copyWith(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color?>((states) => null),
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                  ),
+                  onPressed: _startTimer,
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.pinkAccent, Colors.deepPurpleAccent],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      child: Container(
-                        height: 64,
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Start',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(blurRadius: 8, color: Colors.black26, offset: Offset(0, 2)),
-                            ],
-                          ),
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                    child: Container(
+                      height: 64,
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Start',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(blurRadius: 8, color: Colors.black26, offset: Offset(0, 2)),
+                          ],
                         ),
                       ),
                     ),
