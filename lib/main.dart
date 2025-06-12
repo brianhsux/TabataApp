@@ -145,6 +145,7 @@ class _TabataScreenState extends State<TabataScreen> {
   Timer? _elapsedTimer;
   int _elapsedSeconds = 0;
   int _selectedIndex = 0; // 0: timer, 1: history
+  String? _currentPresetName;
 
   @override
   void initState() {
@@ -793,10 +794,146 @@ class _TabataScreenState extends State<TabataScreen> {
     );
   }
 
+  // 新增：運動模板控制元件
+  Widget _buildTemplateControls(TabataState state) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          ElevatedButton.icon(
+            icon: Icon(Icons.save),
+            label: Text('儲存為模板'),
+            onPressed: () async {
+              String? name = await showDialog<String>(
+                context: context,
+                builder: (context) {
+                  TextEditingController controller = TextEditingController();
+                  return AlertDialog(
+                    title: Text('輸入運動名稱'),
+                    content: TextField(
+                      controller: controller,
+                      decoration: InputDecoration(hintText: '運動名稱'),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, null),
+                        child: Text('取消'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, controller.text.trim()),
+                        child: Text('儲存'),
+                      ),
+                    ],
+                  );
+                },
+              );
+              if (name != null && name.isNotEmpty) {
+                final preset = WorkoutPreset(
+                  name: name,
+                  prepTime: state.prepTime,
+                  workTime: state.workTime,
+                  restTime: state.restTime,
+                  cycles: state.cycles,
+                  sets: state.sets,
+                );
+                await ExerciseDatabase.instance.insertPreset(preset);
+                setState(() {
+                  _currentPresetName = name;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已儲存模板 $name')));
+              }
+            },
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: FutureBuilder<List<WorkoutPreset>>(
+              future: ExerciseDatabase.instance.fetchAllPresets(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return SizedBox();
+                final presets = snapshot.data!;
+                final selectedPreset = presets.where((p) => p.name == _currentPresetName).isNotEmpty
+                    ? presets.firstWhere((p) => p.name == _currentPresetName)
+                    : null;
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.08),
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                    border: Border.all(color: Colors.blueAccent, width: 1.2),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<WorkoutPreset>(
+                      isExpanded: true,
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.blueAccent, size: 32),
+                      hint: Row(
+                        children: [
+                          Icon(Icons.bookmark, color: Colors.blueAccent),
+                          SizedBox(width: 8),
+                          Text(
+                            _currentPresetName ?? '選擇模板',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueAccent,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+                      value: selectedPreset,
+                      items: presets.map((preset) {
+                        return DropdownMenuItem<WorkoutPreset>(
+                          value: preset,
+                          child: Row(
+                            children: [
+                              Icon(Icons.bookmark, color: Colors.blueAccent),
+                              SizedBox(width: 8),
+                              Text(
+                                preset.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blueAccent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (preset) {
+                        if (preset != null) {
+                          state.updatePrepTime(preset.prepTime);
+                          state.updateWorkTime(preset.workTime);
+                          state.updateRestTime(preset.restTime);
+                          state.updateCycles(preset.cycles);
+                          state.updateSets(preset.sets);
+                          setState(() {
+                            _currentPresetName = preset.name;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已載入模板 ${preset.name}')));
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSetupView(TabataState state) {
     return SingleChildScrollView(
       child: Column(
         children: [
+          _buildTemplateControls(state),
           // Preparation block
           Container(
             decoration: BoxDecoration(
