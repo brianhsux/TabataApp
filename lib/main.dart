@@ -1001,22 +1001,73 @@ class _TabataScreenState extends State<TabataScreen> {
                       context: context,
                       builder: (context) {
                         TextEditingController controller = TextEditingController();
-                        return AlertDialog(
-                          title: Text('輸入活動名稱'),
-                          content: TextField(
-                            controller: controller,
-                            decoration: InputDecoration(hintText: '活動名稱'),
+                        return Dialog(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.add_circle_outline, color: Colors.pink.shade400, size: 40),
+                                SizedBox(height: 12),
+                                Text(
+                                  '建立新活動',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.pink.shade400,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                SizedBox(height: 18),
+                                TextField(
+                                  controller: controller,
+                                  decoration: InputDecoration(
+                                    hintText: '請輸入活動名稱',
+                                    filled: true,
+                                    fillColor: Colors.pink.shade50,
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                  style: TextStyle(fontSize: 18),
+                                  autofocus: true,
+                                  onSubmitted: (v) => Navigator.pop(context, v.trim()),
+                                ),
+                                SizedBox(height: 24),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: OutlinedButton(
+                                        onPressed: () => Navigator.pop(context, null),
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: Colors.grey,
+                                          side: BorderSide(color: Colors.grey.shade300),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                        ),
+                                        child: Text('取消'),
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () => Navigator.pop(context, controller.text.trim()),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.pink.shade400,
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                          padding: EdgeInsets.symmetric(vertical: 14),
+                                        ),
+                                        child: Text('建立', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, null),
-                              child: Text('取消'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, controller.text.trim()),
-                              child: Text('建立'),
-                            ),
-                          ],
                         );
                       },
                     );
