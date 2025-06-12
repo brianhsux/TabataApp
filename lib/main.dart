@@ -856,6 +856,7 @@ class _TabataScreenState extends State<TabataScreen> {
               // 切換活動下拉選單
               Expanded(
                 child: FutureBuilder<List<WorkoutPreset>>(
+                  key: ValueKey((_currentPresetName ?? '') + '_' + DateTime.now().millisecondsSinceEpoch.toString()),
                   future: ExerciseDatabase.instance.fetchAllPresets(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return SizedBox();
@@ -918,16 +919,55 @@ class _TabataScreenState extends State<TabataScreen> {
                           return DropdownMenuItem<WorkoutPreset>(
                             value: preset,
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Icon(Icons.bookmark, color: Colors.blueAccent),
-                                SizedBox(width: 8),
-                                Text(
-                                  preset.name,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blueAccent,
-                                    fontSize: 16,
-                                  ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.bookmark, color: Colors.blueAccent),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      preset.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blueAccent,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete_outline, color: Colors.redAccent, size: 22),
+                                  tooltip: '刪除活動',
+                                  onPressed: () async {
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text('刪除活動'),
+                                        content: Text('確定要刪除「${preset.name}」這個活動嗎？'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context, false),
+                                            child: Text('取消'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context, true),
+                                            child: Text('刪除', style: TextStyle(color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    if (confirm == true) {
+                                      await ExerciseDatabase.instance.deletePresetByName(preset.name);
+                                      if (_currentPresetName == preset.name) {
+                                        setState(() {
+                                          _currentPresetName = null;
+                                        });
+                                      } else {
+                                        setState(() {});
+                                      }
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已刪除活動 ${preset.name}')));
+                                    }
+                                  },
                                 ),
                               ],
                             ),
