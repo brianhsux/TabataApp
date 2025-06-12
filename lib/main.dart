@@ -547,7 +547,7 @@ class _TabataScreenState extends State<TabataScreen> {
     );
   }
 
-  Widget _buildProgressView(TabataState state, {bool showElapsed = false}) {
+  Widget _buildProgressView(TabataState state, {bool showElapsed = false, double scale = 1.0}) {
     LinearGradient gradient;
     Color textColor;
     String phaseText;
@@ -618,35 +618,35 @@ class _TabataScreenState extends State<TabataScreen> {
     return Container(
       decoration: BoxDecoration(
         gradient: gradient,
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(32 * scale),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha((0.08 * 255).toInt()),
-            blurRadius: 16,
-            offset: Offset(0, 8),
+            blurRadius: 16 * scale,
+            offset: Offset(0, 8 * scale),
           ),
         ],
       ),
-      margin: EdgeInsets.all(24),
+      margin: EdgeInsets.all(24 * scale),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(iconData, size: 64, color: textColor),
-          SizedBox(height: 16),
+          Icon(iconData, size: 64 * scale, color: textColor),
+          SizedBox(height: 16 * scale),
           Text(
             phaseText,
-            style: TextStyle(fontSize: 48, color: textColor, fontWeight: FontWeight.bold, letterSpacing: 2),
+            style: TextStyle(fontSize: 48 * scale, color: textColor, fontWeight: FontWeight.bold, letterSpacing: 2 * scale),
           ),
           // 圓形倒數進度條
           Stack(
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 240,
-                height: 240,
+                width: 240 * scale,
+                height: 240 * scale,
                 child: CircularProgressIndicator(
                   value: _getProgress(),
-                  strokeWidth: 16,
+                  strokeWidth: 16 * scale,
                   backgroundColor: Colors.white24,
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
@@ -654,59 +654,59 @@ class _TabataScreenState extends State<TabataScreen> {
               Text(
                 displayText,
                 style: TextStyle(
-                  fontSize: displayText == 'Done' ? 72 : 120,
+                  fontSize: displayText == 'Done' ? 72 * scale : 120 * scale,
                   fontWeight: FontWeight.bold,
                   color: textColor,
                   shadows: [
-                    Shadow(blurRadius: 12, color: Colors.black26, offset: Offset(0, 4)),
+                    Shadow(blurRadius: 12 * scale, color: Colors.black26, offset: Offset(0, 4 * scale)),
                   ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 20 * scale),
           // Cycle and Set on separate lines
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.repeat, color: textColor),
-              SizedBox(width: 8),
+              Icon(Icons.repeat, color: textColor, size: 24 * scale),
+              SizedBox(width: 8 * scale),
               Text(
                 'Cycle:  $_currentCycle / ${state.cycles}',
-                style: TextStyle(fontSize: 24, color: textColor),
+                style: TextStyle(fontSize: 24 * scale, color: textColor),
               ),
             ],
           ),
-          SizedBox(height: 12),
+          SizedBox(height: 12 * scale),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.layers, color: textColor),
-              SizedBox(width: 8),
+              Icon(Icons.layers, color: textColor, size: 24 * scale),
+              SizedBox(width: 8 * scale),
               Text(
                 'Set:  $_currentSet / ${state.sets}',
-                style: TextStyle(fontSize: 24, color: textColor),
+                style: TextStyle(fontSize: 24 * scale, color: textColor),
               ),
             ],
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 24 * scale),
           if (showElapsed)
             Builder(
               builder: (context) {
                 final d = Duration(seconds: _elapsedSeconds);
                 String twoDigits(int n) => n.toString().padLeft(2, '0');
                 final timeStr = '${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}';
-                return Text('本次運動已進行：$timeStr', style: TextStyle(fontSize: 18, color: Colors.blueGrey));
+                return Text('本次運動已進行：$timeStr', style: TextStyle(fontSize: 18 * scale, color: Colors.blueGrey));
               },
             ),
-          SizedBox(height: 24),
+          SizedBox(height: 24 * scale),
           // 控制按鈕
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // 上一個狀態
               IconButton(
-                icon: Icon(Icons.skip_previous, size: 36, color: textColor),
+                icon: Icon(Icons.skip_previous, size: 36 * scale, color: textColor),
                 tooltip: '上一個狀態',
                 onPressed: () {
                   final state = context.read<TabataState>();
@@ -740,7 +740,7 @@ class _TabataScreenState extends State<TabataScreen> {
               ),
               // 暫停/繼續按鈕
               IconButton(
-                icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow, size: 48, color: textColor),
+                icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow, size: 48 * scale, color: textColor),
                 tooltip: _isRunning ? '暫停' : '繼續',
                 onPressed: () {
                   if (_isRunning) {
@@ -752,7 +752,7 @@ class _TabataScreenState extends State<TabataScreen> {
               ),
               // 下一個狀態
               IconButton(
-                icon: Icon(Icons.skip_next, size: 36, color: textColor),
+                icon: Icon(Icons.skip_next, size: 36 * scale, color: textColor),
                 tooltip: '下一個狀態',
                 onPressed: () {
                   final state = context.read<TabataState>();
@@ -1155,7 +1155,7 @@ class _TabataScreenState extends State<TabataScreen> {
     );
   }
 
-  Widget _buildSetupView(TabataState state) {
+  Widget _buildSetupView(TabataState state, {double scale = 1.0}) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -1168,29 +1168,29 @@ class _TabataScreenState extends State<TabataScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16 * scale),
               boxShadow: [
                 BoxShadow(
                   color: Colors.yellow.withAlpha((0.3 * 255).toInt()),
-                  blurRadius: 8,
-                  offset: Offset(0, 4),
+                  blurRadius: 8 * scale,
+                  offset: Offset(0, 4 * scale),
                 ),
               ],
             ),
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            margin: EdgeInsets.symmetric(vertical: 8 * scale, horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(vertical: 16 * scale, horizontal: 12 * scale),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.timer, color: Colors.orange.shade900),
-                SizedBox(width: 10),
-                Text('Prep', style: TextStyle(fontSize: 24, color: Colors.orange.shade900, fontWeight: FontWeight.bold)),
-                SizedBox(width: 10),
+                SizedBox(width: 10 * scale),
+                Text('Prep', style: TextStyle(fontSize: 24 * scale, color: Colors.orange.shade900, fontWeight: FontWeight.bold)),
+                SizedBox(width: 10 * scale),
                 Text(
                   state.prepTime.toString(),
-                  style: TextStyle(fontSize: 24, color: Colors.orange.shade900, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 24 * scale, color: Colors.orange.shade900, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: 10),
+                SizedBox(width: 10 * scale),
                 IconButton(
                   icon: Icon(Icons.settings, color: Colors.orange.shade900),
                   onPressed: () => _showEditDialog('Prep', state.prepTime, state.updatePrepTime),
@@ -1206,29 +1206,29 @@ class _TabataScreenState extends State<TabataScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16 * scale),
               boxShadow: [
                 BoxShadow(
                   color: Colors.red.withAlpha((0.3 * 255).toInt()),
-                  blurRadius: 8,
-                  offset: Offset(0, 4),
+                  blurRadius: 8 * scale,
+                  offset: Offset(0, 4 * scale),
                 ),
               ],
             ),
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            margin: EdgeInsets.symmetric(vertical: 8 * scale, horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(vertical: 16 * scale, horizontal: 12 * scale),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.fitness_center, color: Colors.white),
-                SizedBox(width: 10),
+                SizedBox(width: 10 * scale),
                 Text('Work', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                SizedBox(width: 10),
+                SizedBox(width: 10 * scale),
                 Text(
                   state.workTime.toString(),
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: 10),
+                SizedBox(width: 10 * scale),
                 IconButton(
                   icon: Icon(Icons.settings, color: Colors.white),
                   onPressed: () => _showEditDialog('Work', state.workTime, state.updateWorkTime),
@@ -1244,29 +1244,29 @@ class _TabataScreenState extends State<TabataScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16 * scale),
               boxShadow: [
                 BoxShadow(
                   color: Colors.green.withAlpha((0.3 * 255).toInt()),
-                  blurRadius: 8,
-                  offset: Offset(0, 4),
+                  blurRadius: 8 * scale,
+                  offset: Offset(0, 4 * scale),
                 ),
               ],
             ),
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            margin: EdgeInsets.symmetric(vertical: 8 * scale, horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(vertical: 16 * scale, horizontal: 12 * scale),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.self_improvement, color: Colors.white),
-                SizedBox(width: 10),
+                SizedBox(width: 10 * scale),
                 Text('Rest', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                SizedBox(width: 10),
+                SizedBox(width: 10 * scale),
                 Text(
                   state.restTime.toString(),
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: 10),
+                SizedBox(width: 10 * scale),
                 IconButton(
                   icon: Icon(Icons.settings, color: Colors.white),
                   onPressed: () => _showEditDialog('Rest', state.restTime, state.updateRestTime),
@@ -1282,79 +1282,70 @@ class _TabataScreenState extends State<TabataScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16 * scale),
               boxShadow: [
                 BoxShadow(
                   color: Colors.blue.withAlpha((0.3 * 255).toInt()),
-                  blurRadius: 8,
-                  offset: Offset(0, 4),
+                  blurRadius: 8 * scale,
+                  offset: Offset(0, 4 * scale),
                 ),
               ],
             ),
-            margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+            margin: EdgeInsets.symmetric(vertical: 8 * scale, horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(vertical: 6 * scale, horizontal: 8 * scale),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Cycles block
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.repeat, color: Colors.white),
-                      SizedBox(height: 10),
-                      Text('Cycles', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
-                      Text(
-                        state.cycles.toString(),
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.remove, color: Colors.white),
-                            onPressed: () {
-                              if (state.cycles > 1) state.updateCycles(state.cycles - 1);
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.add, color: Colors.white),
-                            onPressed: () => state.updateCycles(state.cycles + 1),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                // Cycles
+                Icon(Icons.repeat, color: Colors.white, size: 18 * scale),
+                SizedBox(width: 2 * scale),
+                Text('Cycles', style: TextStyle(fontSize: 14 * scale, color: Colors.white)),
+                SizedBox(width: 2 * scale),
+                IconButton(
+                  icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () {
+                    if (state.cycles > 1) state.updateCycles(state.cycles - 1);
+                  },
                 ),
-                // Sets block
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.layers, color: Colors.white),
-                      SizedBox(height: 10),
-                      Text('Sets', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
-                      Text(
-                        state.sets.toString(),
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.remove, color: Colors.white),
-                            onPressed: () {
-                              if (state.sets > 1) state.updateSets(state.sets - 1);
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.add, color: Colors.white),
-                            onPressed: () => state.updateSets(state.sets + 1),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                Text(
+                  state.cycles.toString(),
+                  style: TextStyle(fontSize: 15 * scale, color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add, color: Colors.white, size: 18 * scale),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => state.updateCycles(state.cycles + 1),
+                ),
+                SizedBox(width: 14 * scale),
+                // Sets
+                Icon(Icons.layers, color: Colors.white, size: 18 * scale),
+                SizedBox(width: 2 * scale),
+                Text('Sets', style: TextStyle(fontSize: 14 * scale, color: Colors.white)),
+                SizedBox(width: 2 * scale),
+                IconButton(
+                  icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () {
+                    if (state.sets > 1) state.updateSets(state.sets - 1);
+                  },
+                ),
+                Text(
+                  state.sets.toString(),
+                  style: TextStyle(fontSize: 15 * scale, color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add, color: Colors.white, size: 18 * scale),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => state.updateSets(state.sets + 1),
                 ),
               ],
             ),
@@ -1375,23 +1366,33 @@ class _TabataScreenState extends State<TabataScreen> {
       }
     }
 
+    // 動態縮放：螢幕高度小於900時線性縮小UI，並扣除 banner 高度
+    final screenHeight = MediaQuery.of(context).size.height;
+    print('DEBUG: screenHeight = ' + screenHeight.toString());
+    double scale = 1.0;
+    final bannerHeight = 50.0;
+    final availableHeight = screenHeight - bannerHeight;
+    if (availableHeight < 900) {
+      scale = (availableHeight / 900).clamp(0.7, 1.0);
+    }
+
     final List<Widget> _pages = [
       Column(
         children: [
           Expanded(
-            child: showSetup ? _buildSetupView(state) : _buildProgressView(state, showElapsed: true),
+            child: showSetup ? _buildSetupView(state, scale: scale) : _buildProgressView(state, showElapsed: true, scale: scale),
           ),
           if (showSetup)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 width: double.infinity,
-                height: 64,
+                height: 52 * scale,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero, // 讓 Ink 填滿
+                    padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
+                      borderRadius: BorderRadius.circular(28 * scale),
                     ),
                     elevation: 8,
                     backgroundColor: Colors.transparent,
@@ -1408,15 +1409,15 @@ class _TabataScreenState extends State<TabataScreen> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(32),
+                      borderRadius: BorderRadius.circular(28 * scale),
                     ),
                     child: Container(
-                      height: 64,
+                      height: 52 * scale,
                       alignment: Alignment.center,
                       child: Text(
                         'Start',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 18 * scale,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 2,
                           color: Colors.white,
@@ -1437,17 +1438,17 @@ class _TabataScreenState extends State<TabataScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tabata Timer'),
+        title: Text('Tabata Timer', style: TextStyle(fontSize: 22 * scale)),
         leading: !showSetup
             ? IconButton(
-                icon: Icon(Icons.close),
+                icon: Icon(Icons.close, size: 22 * scale),
                 tooltip: 'Stop',
                 onPressed: () => _stopTimer(userInitiated: true),
               )
             : null,
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings, size: 22 * scale),
             onPressed: () {
               Navigator.push(
                 context,
@@ -1477,8 +1478,8 @@ class _TabataScreenState extends State<TabataScreen> {
           });
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.home, size: 22 * scale), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.history, size: 22 * scale), label: ''),
         ],
       ),
     );
