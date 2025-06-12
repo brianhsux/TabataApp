@@ -891,7 +891,7 @@ class _TabataScreenState extends State<TabataScreen> {
                     return DropdownButtonHideUnderline(
                       child: DropdownButton2<WorkoutPreset>(
                         customButton: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [Colors.blue.shade100, Colors.blue.shade300], // 切換活動用藍色系
@@ -911,18 +911,18 @@ class _TabataScreenState extends State<TabataScreen> {
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.swap_horiz, color: Colors.blue.shade700),
-                              SizedBox(width: 8),
+                              Icon(Icons.swap_horiz, color: Colors.blue.shade700, size: 22),
+                              SizedBox(width: 6),
                               Text(
                                 '切換活動',
                                 style: TextStyle(
                                   color: Colors.blue.shade900,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                                  fontSize: 15,
                                   letterSpacing: 1.2,
                                 ),
                               ),
-                              Icon(Icons.keyboard_arrow_down_rounded, color: Colors.blue.shade700),
+                              Icon(Icons.keyboard_arrow_down_rounded, color: Colors.blue.shade700, size: 22),
                             ],
                           ),
                         ),
@@ -1112,7 +1112,7 @@ class _TabataScreenState extends State<TabataScreen> {
                     }
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [Colors.pink.shade100, Colors.pink.shade300], // 建立新活動用粉紅色系
@@ -1132,14 +1132,14 @@ class _TabataScreenState extends State<TabataScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.add_circle_outline, color: Colors.pink.shade700, size: 28),
-                        SizedBox(width: 10),
+                        Icon(Icons.add_circle_outline, color: Colors.pink.shade700, size: 22),
+                        SizedBox(width: 6),
                         Text(
                           '建立新活動',
                           style: TextStyle(
                             color: Colors.pink.shade900,
                             fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                            fontSize: 15,
                             letterSpacing: 1.2,
                           ),
                         ),
