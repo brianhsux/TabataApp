@@ -511,39 +511,105 @@ class _TabataScreenState extends State<TabataScreen> {
 
   void _showEditDialog(String phase, int currentTime, Function(int) onUpdate) {
     int newTime = currentTime;
-    // Store the current value from text field to ensure it's captured before dialog closes
     TextEditingController controller = TextEditingController(text: currentTime.toString());
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Edit $phase Time (seconds)'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            // newTime is updated via controller in actions
-          },
-          decoration: InputDecoration(
-            hintText: currentTime.toString(),
+      builder: (context) {
+        Color mainColor;
+        IconData iconData;
+        switch (phase.toLowerCase()) {
+          case 'prep':
+            mainColor = Colors.orange.shade400;
+            iconData = Icons.timer;
+            break;
+          case 'work':
+            mainColor = Colors.red.shade400;
+            iconData = Icons.fitness_center;
+            break;
+          case 'rest':
+            mainColor = Colors.green.shade400;
+            iconData = Icons.self_improvement;
+            break;
+          default:
+            mainColor = Colors.blueGrey;
+            iconData = Icons.settings;
+        }
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(iconData, color: mainColor, size: 40),
+                SizedBox(height: 12),
+                Text(
+                  '設定 $phase 時間',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: mainColor,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                SizedBox(height: 18),
+                TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: '請輸入秒數',
+                    filled: true,
+                    fillColor: mainColor.withOpacity(0.08),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  style: TextStyle(fontSize: 18),
+                  autofocus: true,
+                  onSubmitted: (v) => Navigator.pop(context, v.trim()),
+                ),
+                SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context, null),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.grey,
+                          side: BorderSide(color: Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        child: Text('取消'),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          newTime = int.tryParse(controller.text) ?? currentTime;
+                          if (newTime > 0) {
+                            onUpdate(newTime);
+                          }
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: mainColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: Text('確認', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              newTime = int.tryParse(controller.text) ?? currentTime;
-              if (newTime > 0) { // Optional: ensure time is positive
-                onUpdate(newTime);
-              }
-              Navigator.pop(context);
-            },
-            child: Text('Confirm'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -1287,7 +1353,7 @@ class _TabataScreenState extends State<TabataScreen> {
                   children: [
                     Icon(Icons.repeat, color: Colors.white, size: 18 * scale),
                     SizedBox(width: 2 * scale),
-                    Text('Cycles', style: TextStyle(fontSize: 14 * scale, color: Colors.white)),
+                    Text('Cycles', style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
                     SizedBox(width: 2 * scale),
                     IconButton(
                       icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
@@ -1317,7 +1383,7 @@ class _TabataScreenState extends State<TabataScreen> {
                   children: [
                     Icon(Icons.layers, color: Colors.white, size: 18 * scale),
                     SizedBox(width: 2 * scale),
-                    Text('Sets', style: TextStyle(fontSize: 14 * scale, color: Colors.white)),
+                    Text('Sets', style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
                     SizedBox(width: 2 * scale),
                     IconButton(
                       icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
