@@ -1244,7 +1244,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 ),
                 SizedBox(width: 10 * scale),
                 IconButton(
-                  icon: Icon(Icons.settings, color: Colors.orange.shade900),
+                  icon: Icon(Icons.edit, color: Colors.orange.shade900),
                   onPressed: () => _showEditDialog('Prep', state.prepTime, state.updatePrepTime),
                 ),
               ],
@@ -1282,7 +1282,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 ),
                 SizedBox(width: 10 * scale),
                 IconButton(
-                  icon: Icon(Icons.settings, color: Colors.white),
+                  icon: Icon(Icons.edit, color: Colors.white),
                   onPressed: () => _showEditDialog('Work', state.workTime, state.updateWorkTime),
                 ),
               ],
@@ -1320,7 +1320,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 ),
                 SizedBox(width: 10 * scale),
                 IconButton(
-                  icon: Icon(Icons.settings, color: Colors.white),
+                  icon: Icon(Icons.edit, color: Colors.white),
                   onPressed: () => _showEditDialog('Rest', state.restTime, state.updateRestTime),
                 ),
               ],
