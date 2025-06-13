@@ -831,10 +831,10 @@ class _TabataScreenState extends State<TabataScreen> {
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.deepPurple.shade100, Colors.deepPurple.shade300], // 主色
+                  colors: [Colors.deepPurple.shade100, Colors.deepPurple.shade300],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -847,30 +847,16 @@ class _TabataScreenState extends State<TabataScreen> {
                   ),
                 ],
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '目前活動',
-                    style: TextStyle(
-                      color: Colors.deepPurple.shade700,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    _currentPresetName ?? '尚未選擇活動',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.deepPurple.shade900,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ],
+              alignment: Alignment.center,
+              child: Text(
+                _currentPresetName ?? '尚未選擇活動',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.deepPurple.shade900,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  letterSpacing: 1.2,
+                ),
               ),
             ),
           ),
@@ -1293,59 +1279,67 @@ class _TabataScreenState extends State<TabataScreen> {
             ),
             margin: EdgeInsets.symmetric(vertical: 8 * scale, horizontal: 16 * scale),
             padding: EdgeInsets.symmetric(vertical: 6 * scale, horizontal: 8 * scale),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Cycles
-                Icon(Icons.repeat, color: Colors.white, size: 18 * scale),
-                SizedBox(width: 2 * scale),
-                Text('Cycles', style: TextStyle(fontSize: 14 * scale, color: Colors.white)),
-                SizedBox(width: 2 * scale),
-                IconButton(
-                  icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  visualDensity: VisualDensity.compact,
-                  onPressed: () {
-                    if (state.cycles > 1) state.updateCycles(state.cycles - 1);
-                  },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.repeat, color: Colors.white, size: 18 * scale),
+                    SizedBox(width: 2 * scale),
+                    Text('Cycles', style: TextStyle(fontSize: 14 * scale, color: Colors.white)),
+                    SizedBox(width: 2 * scale),
+                    IconButton(
+                      icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
+                      padding: EdgeInsets.zero,
+                      constraints: BoxConstraints(),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () {
+                        if (state.cycles > 1) state.updateCycles(state.cycles - 1);
+                      },
+                    ),
+                    Text(
+                      state.cycles.toString(),
+                      style: TextStyle(fontSize: 15 * scale, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add, color: Colors.white, size: 18 * scale),
+                      padding: EdgeInsets.zero,
+                      constraints: BoxConstraints(),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () => state.updateCycles(state.cycles + 1),
+                    ),
+                  ],
                 ),
-                Text(
-                  state.cycles.toString(),
-                  style: TextStyle(fontSize: 15 * scale, color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  icon: Icon(Icons.add, color: Colors.white, size: 18 * scale),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  visualDensity: VisualDensity.compact,
-                  onPressed: () => state.updateCycles(state.cycles + 1),
-                ),
-                SizedBox(width: 14 * scale),
-                // Sets
-                Icon(Icons.layers, color: Colors.white, size: 18 * scale),
-                SizedBox(width: 2 * scale),
-                Text('Sets', style: TextStyle(fontSize: 14 * scale, color: Colors.white)),
-                SizedBox(width: 2 * scale),
-                IconButton(
-                  icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  visualDensity: VisualDensity.compact,
-                  onPressed: () {
-                    if (state.sets > 1) state.updateSets(state.sets - 1);
-                  },
-                ),
-                Text(
-                  state.sets.toString(),
-                  style: TextStyle(fontSize: 15 * scale, color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  icon: Icon(Icons.add, color: Colors.white, size: 18 * scale),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  visualDensity: VisualDensity.compact,
-                  onPressed: () => state.updateSets(state.sets + 1),
+                SizedBox(height: 4 * scale),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.layers, color: Colors.white, size: 18 * scale),
+                    SizedBox(width: 2 * scale),
+                    Text('Sets', style: TextStyle(fontSize: 14 * scale, color: Colors.white)),
+                    SizedBox(width: 2 * scale),
+                    IconButton(
+                      icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
+                      padding: EdgeInsets.zero,
+                      constraints: BoxConstraints(),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () {
+                        if (state.sets > 1) state.updateSets(state.sets - 1);
+                      },
+                    ),
+                    Text(
+                      state.sets.toString(),
+                      style: TextStyle(fontSize: 15 * scale, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add, color: Colors.white, size: 18 * scale),
+                      padding: EdgeInsets.zero,
+                      constraints: BoxConstraints(),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () => state.updateSets(state.sets + 1),
+                    ),
+                  ],
                 ),
               ],
             ),
