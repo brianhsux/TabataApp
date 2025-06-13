@@ -530,6 +530,14 @@ class _TabataScreenState extends State<TabataScreen> {
             mainColor = Colors.green.shade400;
             iconData = Icons.self_improvement;
             break;
+          case 'cycles':
+            mainColor = Colors.blue.shade400;
+            iconData = Icons.repeat;
+            break;
+          case 'sets':
+            mainColor = Colors.purple.shade400;
+            iconData = Icons.layers;
+            break;
           default:
             mainColor = Colors.blueGrey;
             iconData = Icons.settings;
