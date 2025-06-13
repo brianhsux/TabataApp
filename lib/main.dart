@@ -1229,22 +1229,22 @@ class _TabataScreenState extends State<TabataScreen> {
                 ),
               ],
             ),
-            margin: EdgeInsets.symmetric(vertical: 8 * scale, horizontal: 16 * scale),
-            padding: EdgeInsets.symmetric(vertical: 16 * scale, horizontal: 12 * scale),
+            margin: EdgeInsets.symmetric(vertical: 6 * scale, horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(vertical: 10 * scale, horizontal: 12 * scale),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.timer, color: Colors.orange.shade900),
-                SizedBox(width: 10 * scale),
-                Text('Prep', style: TextStyle(fontSize: 24 * scale, color: Colors.orange.shade900, fontWeight: FontWeight.bold)),
-                SizedBox(width: 10 * scale),
+                Icon(Icons.timer, color: Colors.orange.shade900, size: 20 * scale),
+                SizedBox(width: 8 * scale),
+                Text('Prep', style: TextStyle(fontSize: 18 * scale, color: Colors.orange.shade900, fontWeight: FontWeight.bold)),
+                SizedBox(width: 12 * scale),
                 Text(
                   state.prepTime.toString(),
-                  style: TextStyle(fontSize: 24 * scale, color: Colors.orange.shade900, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18 * scale, color: Colors.orange.shade900, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: 10 * scale),
+                SizedBox(width: 8 * scale),
                 IconButton(
-                  icon: Icon(Icons.edit, color: Colors.orange.shade900),
+                  icon: Icon(Icons.edit, color: Colors.orange.shade900, size: 20 * scale),
                   onPressed: () => _showEditDialog('Prep', state.prepTime, state.updatePrepTime),
                 ),
               ],
@@ -1267,22 +1267,22 @@ class _TabataScreenState extends State<TabataScreen> {
                 ),
               ],
             ),
-            margin: EdgeInsets.symmetric(vertical: 8 * scale, horizontal: 16 * scale),
-            padding: EdgeInsets.symmetric(vertical: 16 * scale, horizontal: 12 * scale),
+            margin: EdgeInsets.symmetric(vertical: 6 * scale, horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(vertical: 10 * scale, horizontal: 12 * scale),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.fitness_center, color: Colors.white),
-                SizedBox(width: 10 * scale),
-                Text('Work', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                SizedBox(width: 10 * scale),
+                Icon(Icons.fitness_center, color: Colors.white, size: 20 * scale),
+                SizedBox(width: 8 * scale),
+                Text('Work', style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold)),
+                SizedBox(width: 12 * scale),
                 Text(
                   state.workTime.toString(),
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: 10 * scale),
+                SizedBox(width: 8 * scale),
                 IconButton(
-                  icon: Icon(Icons.edit, color: Colors.white),
+                  icon: Icon(Icons.edit, color: Colors.white, size: 20 * scale),
                   onPressed: () => _showEditDialog('Work', state.workTime, state.updateWorkTime),
                 ),
               ],
@@ -1305,28 +1305,28 @@ class _TabataScreenState extends State<TabataScreen> {
                 ),
               ],
             ),
-            margin: EdgeInsets.symmetric(vertical: 8 * scale, horizontal: 16 * scale),
-            padding: EdgeInsets.symmetric(vertical: 16 * scale, horizontal: 12 * scale),
+            margin: EdgeInsets.symmetric(vertical: 6 * scale, horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(vertical: 10 * scale, horizontal: 12 * scale),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.self_improvement, color: Colors.white),
-                SizedBox(width: 10 * scale),
-                Text('Rest', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                SizedBox(width: 10 * scale),
+                Icon(Icons.self_improvement, color: Colors.white, size: 20 * scale),
+                SizedBox(width: 8 * scale),
+                Text('Rest', style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold)),
+                SizedBox(width: 12 * scale),
                 Text(
                   state.restTime.toString(),
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: 10 * scale),
+                SizedBox(width: 8 * scale),
                 IconButton(
-                  icon: Icon(Icons.edit, color: Colors.white),
+                  icon: Icon(Icons.edit, color: Colors.white, size: 20 * scale),
                   onPressed: () => _showEditDialog('Rest', state.restTime, state.updateRestTime),
                 ),
               ],
             ),
           ),
-          // Bottom cycles and sets block
+          // Cycles 卡片
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -1343,69 +1343,67 @@ class _TabataScreenState extends State<TabataScreen> {
                 ),
               ],
             ),
-            margin: EdgeInsets.symmetric(vertical: 8 * scale, horizontal: 16 * scale),
-            padding: EdgeInsets.symmetric(vertical: 6 * scale, horizontal: 8 * scale),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            margin: EdgeInsets.symmetric(vertical: 6 * scale, horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(vertical: 10 * scale, horizontal: 12 * scale),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.repeat, color: Colors.white, size: 18 * scale),
-                    SizedBox(width: 2 * scale),
-                    Text('Cycles', style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
-                    SizedBox(width: 2 * scale),
-                    IconButton(
-                      icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
-                      padding: EdgeInsets.zero,
-                      constraints: BoxConstraints(),
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {
-                        if (state.cycles > 1) state.updateCycles(state.cycles - 1);
-                      },
-                    ),
-                    Text(
-                      state.cycles.toString(),
-                      style: TextStyle(fontSize: 15 * scale, color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.add, color: Colors.white, size: 18 * scale),
-                      padding: EdgeInsets.zero,
-                      constraints: BoxConstraints(),
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () => state.updateCycles(state.cycles + 1),
-                    ),
-                  ],
+                Icon(Icons.repeat, color: Colors.white, size: 20 * scale),
+                SizedBox(width: 8 * scale),
+                Text('Cycles', style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
+                SizedBox(width: 12 * scale),
+                Text(
+                  state.cycles.toString(),
+                  style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 4 * scale),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.layers, color: Colors.white, size: 18 * scale),
-                    SizedBox(width: 2 * scale),
-                    Text('Sets', style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
-                    SizedBox(width: 2 * scale),
-                    IconButton(
-                      icon: Icon(Icons.remove, color: Colors.white, size: 18 * scale),
-                      padding: EdgeInsets.zero,
-                      constraints: BoxConstraints(),
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {
-                        if (state.sets > 1) state.updateSets(state.sets - 1);
-                      },
-                    ),
-                    Text(
-                      state.sets.toString(),
-                      style: TextStyle(fontSize: 15 * scale, color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.add, color: Colors.white, size: 18 * scale),
-                      padding: EdgeInsets.zero,
-                      constraints: BoxConstraints(),
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () => state.updateSets(state.sets + 1),
-                    ),
-                  ],
+                SizedBox(width: 8 * scale),
+                IconButton(
+                  icon: Icon(Icons.edit, color: Colors.white, size: 20 * scale),
+                  onPressed: () {
+                    _showEditDialog('Cycles', state.cycles, (v) => state.updateCycles(v));
+                  },
+                  tooltip: '編輯 Cycles',
+                ),
+              ],
+            ),
+          ),
+          // Sets 卡片
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.purple.shade400, Colors.deepPurple.shade200],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16 * scale),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.purple.withAlpha((0.3 * 255).toInt()),
+                  blurRadius: 8 * scale,
+                  offset: Offset(0, 4 * scale),
+                ),
+              ],
+            ),
+            margin: EdgeInsets.symmetric(vertical: 6 * scale, horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(vertical: 10 * scale, horizontal: 12 * scale),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.layers, color: Colors.white, size: 20 * scale),
+                SizedBox(width: 8 * scale),
+                Text('Sets', style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
+                SizedBox(width: 12 * scale),
+                Text(
+                  state.sets.toString(),
+                  style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 8 * scale),
+                IconButton(
+                  icon: Icon(Icons.edit, color: Colors.white, size: 20 * scale),
+                  onPressed: () {
+                    _showEditDialog('Sets', state.sets, (v) => state.updateSets(v));
+                  },
+                  tooltip: '編輯 Sets',
                 ),
               ],
             ),
