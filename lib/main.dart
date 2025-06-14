@@ -313,6 +313,7 @@ class _TabataScreenState extends State<TabataScreen> {
       final endTime = DateTime.now();
       final duration = _elapsedSeconds;
       final record = ExerciseRecord(
+        workoutName: _currentPresetName,
         workoutTime: state.workTime,
         restTime: state.restTime,
         cycles: state.cycles,
@@ -362,6 +363,7 @@ class _TabataScreenState extends State<TabataScreen> {
     final endTime = DateTime.now();
     final duration = _elapsedSeconds;
     final record = ExerciseRecord(
+      workoutName: _currentPresetName,
       workoutTime: state.workTime,
       restTime: state.restTime,
       cycles: state.cycles,

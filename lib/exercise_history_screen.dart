@@ -100,34 +100,128 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                         final totalWorkout = r.workoutTime * r.cycles * r.sets;
                         final totalRest = r.restTime * r.cycles * r.sets;
                         final selected = r.id != null && _selectedIds.contains(r.id);
-                        return ListTile(
-                          leading: r.id != null
-                              ? Checkbox(
-                                  value: selected,
-                                  onChanged: (checked) {
-                                    setState(() {
-                                      if (checked == true) {
-                                        _selectedIds.add(r.id!);
-                                      } else {
-                                        _selectedIds.remove(r.id);
-                                      }
-                                    });
-                                  },
-                                )
-                              : null,
-                          title: Text('運動時間：${_formatDuration(r.durationSeconds)}'),
-                          subtitle: Text('Workout: ${totalWorkout}s, Rest: ${totalRest}s, Cycles: ${r.cycles}, Sets: ${r.sets}\n${_formatDateTime(r.dateTime)}'),
-                          onLongPress: r.id != null
-                              ? () {
-                                  setState(() {
-                                    if (_selectedIds.contains(r.id)) {
-                                      _selectedIds.remove(r.id);
-                                    } else {
-                                      _selectedIds.add(r.id!);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          child: Material(
+                            color: Colors.white,
+                            elevation: selected ? 6 : 2,
+                            borderRadius: BorderRadius.circular(18),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(18),
+                              onLongPress: r.id != null
+                                  ? () {
+                                      setState(() {
+                                        if (_selectedIds.contains(r.id)) {
+                                          _selectedIds.remove(r.id);
+                                        } else {
+                                          _selectedIds.add(r.id!);
+                                        }
+                                      });
                                     }
-                                  });
-                                }
-                              : null,
+                                  : null,
+                              child: Stack(
+                                children: [
+                                  // 主題色條
+                                  Positioned(
+                                    left: 0,
+                                    top: 0,
+                                    bottom: 0,
+                                    child: Container(
+                                      width: 6,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blueAccent,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(18),
+                                          bottomLeft: Radius.circular(18),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // Icon
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 12, top: 2),
+                                          child: Icon(Icons.fitness_center, color: Colors.blueAccent, size: 28),
+                                        ),
+                                        // 主要內容
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      r.workoutName?.isNotEmpty == true ? r.workoutName! : '未命名活動',
+                                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, letterSpacing: 0.5),
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    _formatDuration(r.durationSeconds),
+                                                    style: TextStyle(fontSize: 14, color: Colors.blueAccent, fontWeight: FontWeight.w600),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 6),
+                                              Row(
+                                                children: [
+                                                  Icon(Icons.timer, size: 16, color: Colors.grey[500]),
+                                                  SizedBox(width: 3),
+                                                  Text('W:${r.workoutTime}s', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                                  SizedBox(width: 10),
+                                                  Icon(Icons.self_improvement, size: 16, color: Colors.grey[500]),
+                                                  SizedBox(width: 3),
+                                                  Text('R:${r.restTime}s', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                                  SizedBox(width: 10),
+                                                  Icon(Icons.repeat, size: 16, color: Colors.grey[500]),
+                                                  SizedBox(width: 3),
+                                                  Text('C:${r.cycles}', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                                  SizedBox(width: 10),
+                                                  Icon(Icons.layers, size: 16, color: Colors.grey[500]),
+                                                  SizedBox(width: 3),
+                                                  Text('S:${r.sets}', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                                ],
+                                              ),
+                                              SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  Icon(Icons.calendar_today, size: 15, color: Colors.grey[400]),
+                                                  SizedBox(width: 4),
+                                                  Text(_formatDateTime(r.dateTime), style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        // Checkbox
+                                        if (r.id != null)
+                                          Padding(
+                                            padding: const EdgeInsets.only(left: 8, top: 2),
+                                            child: Checkbox(
+                                              value: selected,
+                                              onChanged: (checked) {
+                                                setState(() {
+                                                  if (checked == true) {
+                                                    _selectedIds.add(r.id!);
+                                                  } else {
+                                                    _selectedIds.remove(r.id);
+                                                  }
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         );
                       },
                     ),
