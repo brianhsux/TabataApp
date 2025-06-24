@@ -1673,7 +1673,7 @@ class _TabataScreenState extends State<TabataScreen> {
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          if ((_isBannerLoaded && _bannerAd != null) && (showSetup || _selectedIndex == 1))
+          if ((_isBannerLoaded && _bannerAd != null) && (showSetup && _selectedIndex == 0))
             Container(
               width: _bannerAd!.size.width.toDouble(),
               height: _bannerAd!.size.height.toDouble(),

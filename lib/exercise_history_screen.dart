@@ -101,7 +101,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                         final totalRest = r.restTime * r.cycles * r.sets;
                         final selected = r.id != null && _selectedIds.contains(r.id);
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                           child: Material(
                             color: Colors.white,
                             elevation: selected ? 6 : 2,
@@ -192,7 +192,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                 children: [
                                                   Icon(Icons.calendar_today, size: 15, color: Colors.grey[400]),
                                                   SizedBox(width: 4),
-                                                  Text(_formatDateTime(r.dateTime), style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                                                  Text(_formatDateTime(r.dateTime), style: TextStyle(fontSize: 10, color: Colors.grey[500])),
                                                 ],
                                               ),
                                             ],
@@ -247,6 +247,12 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
       },
       availableCalendarFormats: const {CalendarFormat.month: '月'},
       calendarFormat: CalendarFormat.month,
+      rowHeight: 40,
+      daysOfWeekHeight: 20,
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: TextStyle(fontSize: 12),
+        weekendStyle: TextStyle(fontSize: 12),
+      ),
       calendarStyle: CalendarStyle(
         todayDecoration: BoxDecoration(
           color: Colors.blueAccent,
