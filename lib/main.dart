@@ -428,30 +428,80 @@ class _TabataScreenState extends State<TabataScreen> {
     final totalRest = record.restTime * record.cycles * record.sets;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('運動結果報告'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('運動時間：${_formatDuration(record.durationSeconds)}'),
-            Text('Workout 秒數：$totalWorkout'),
-            Text('Rest 秒數：$totalRest'),
-            Text('Cycles：${record.cycles}'),
-            Text('Sets：${record.sets}'),
-            Text('日期：${_formatDateTime(record.dateTime)}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _resetTimer();
-            },
-            child: Text('確定'),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.emoji_events_rounded, color: Colors.amber.shade700, size: 54),
+              SizedBox(height: 18),
+              Text(
+                '運動結果報告',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.amber.shade800,
+                  letterSpacing: 1.2,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 18),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.amber.shade50,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _reportRow('運動時間', _formatDuration(record.durationSeconds)),
+                    SizedBox(height: 8),
+                    _reportRow('Workout 秒數', '$totalWorkout'),
+                    SizedBox(height: 8),
+                    _reportRow('Rest 秒數', '$totalRest'),
+                    SizedBox(height: 8),
+                    _reportRow('Cycles', '${record.cycles}'),
+                    SizedBox(height: 8),
+                    _reportRow('Sets', '${record.sets}'),
+                    SizedBox(height: 8),
+                    _reportRow('日期', _formatDateTime(record.dateTime)),
+                  ],
+                ),
+              ),
+              SizedBox(height: 28),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _resetTimer();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber.shade700,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text('確定', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _reportRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(fontSize: 16, color: Colors.grey[800])),
+        Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.amber[900])),
+      ],
     );
   }
 
