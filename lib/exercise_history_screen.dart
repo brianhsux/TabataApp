@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'exercise_db.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 class ExerciseHistoryScreen extends StatefulWidget {
   const ExerciseHistoryScreen({super.key});
@@ -16,6 +17,9 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   List<ExerciseRecord> _allRecords = [];
+  int _selectedRange = 5; // 預設5天
+  final List<int> _rangeOptions = [5, 7, 14, 30, 90, 180, 360];
+  int _dialogSelectedRange = 5; // dialog 內用
 
   @override
   void initState() {
@@ -55,6 +59,101 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
       appBar: AppBar(
         title: Text('運動歷史紀錄'),
         actions: [
+          IconButton(
+            icon: Icon(Icons.pie_chart),
+            tooltip: '查看運動佔比',
+            onPressed: () {
+              _dialogSelectedRange = _selectedRange;
+              showDialog(
+                context: context,
+                builder: (context) => StatefulBuilder(
+                  builder: (context, setState) {
+                    final now = DateTime.now();
+                    final start = now.subtract(Duration(days: _dialogSelectedRange - 1));
+                    final Set<String> exerciseDayStrs = _allRecords.map((r) => r.dateTime.substring(0, 10)).toSet();
+                    int exerciseCount = 0;
+                    for (int i = 0; i < _dialogSelectedRange; i++) {
+                      final d = start.add(Duration(days: i));
+                      final dStr = "${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}";
+                      if (exerciseDayStrs.contains(dStr)) exerciseCount++;
+                    }
+                    int restCount = _dialogSelectedRange - exerciseCount;
+                    final dataMap = {
+                      "有運動": exerciseCount.toDouble(),
+                      "沒運動": restCount.toDouble(),
+                    };
+                    final percent = (exerciseCount / _dialogSelectedRange * 100).toStringAsFixed(1);
+                    return Dialog(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('運動佔比統計', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                                IconButton(
+                                  icon: Icon(Icons.close),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("區間：", style: TextStyle(fontSize: 15)),
+                                DropdownButton<int>(
+                                  value: _dialogSelectedRange,
+                                  items: _rangeOptions.map((v) => DropdownMenuItem(value: v, child: Text("$v 天"))).toList(),
+                                  onChanged: (v) {
+                                    if (v != null) setState(() => _dialogSelectedRange = v);
+                                  },
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Text("（${exerciseCount}天有運動）", style: TextStyle(fontSize: 15)),
+                            SizedBox(height: 8),
+                            SizedBox(
+                              height: 140,
+                              child: PieChart(
+                                dataMap: dataMap,
+                                chartType: ChartType.disc,
+                                colorList: [Colors.blueAccent, Colors.grey[300]!],
+                                chartValuesOptions: ChartValuesOptions(
+                                  showChartValuesInPercentage: true,
+                                  showChartValues: false,
+                                  showChartValueBackground: false,
+                                ),
+                                legendOptions: LegendOptions(
+                                  showLegends: true,
+                                  legendPosition: LegendPosition.right,
+                                  legendTextStyle: TextStyle(fontSize: 13),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 6),
+                            Text("${_dialogSelectedRange}天內運動${exerciseCount}天，佔比 $percent%", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                            SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('關閉'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
           if (_selectedIds.isNotEmpty)
             IconButton(
               icon: Icon(Icons.delete),

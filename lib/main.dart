@@ -1702,8 +1702,8 @@ class _TabataScreenState extends State<TabataScreen> {
     if (!state.bgmEnabled) return;
     await _stopBgm();
     _bgmPlayer = AudioPlayer();
-    String asset = phase == 'workout' ? 'assets/sounds/mystery.wav' : 'assets/sounds/rest.wav';
-    await _bgmPlayer!.setSource(AssetSource(asset.replaceFirst('assets/', '')));
+    String asset = phase == 'workout' ? 'sounds/mystery.wav' : 'sounds/rest.wav';
+    await _bgmPlayer!.setSource(AssetSource(asset));
     await _bgmPlayer!.setReleaseMode(ReleaseMode.loop);
     await _bgmPlayer!.resume();
   }
