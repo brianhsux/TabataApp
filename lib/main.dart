@@ -1121,24 +1121,69 @@ class _TabataScreenState extends State<TabataScreen> {
                                   ],
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.delete_outline, color: Colors.redAccent, size: 22),
+                                  icon: Icon(Icons.delete_forever_rounded, color: Colors.redAccent, size: 22),
                                   tooltip: '刪除活動',
                                   onPressed: () async {
                                     final confirm = await showDialog<bool>(
                                       context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Text('刪除活動'),
-                                        content: Text('確定要刪除「${preset.name}」這個活動嗎？'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(context, false),
-                                            child: Text('取消'),
+                                      builder: (context) => Dialog(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.delete_forever_rounded, color: Colors.redAccent, size: 48),
+                                              SizedBox(height: 18),
+                                              Text(
+                                                '刪除活動',
+                                                style: TextStyle(
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.redAccent,
+                                                  letterSpacing: 1.2,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              SizedBox(height: 16),
+                                              Text(
+                                                '確定要刪除「${preset.name}」這個活動嗎？',
+                                                style: TextStyle(fontSize: 16, color: Colors.black87),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              SizedBox(height: 28),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: OutlinedButton(
+                                                      onPressed: () => Navigator.pop(context, false),
+                                                      style: OutlinedButton.styleFrom(
+                                                        foregroundColor: Colors.grey,
+                                                        side: BorderSide(color: Colors.grey.shade300),
+                                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                                                        padding: EdgeInsets.symmetric(vertical: 14),
+                                                      ),
+                                                      child: Text('取消', style: TextStyle(fontSize: 16)),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 18),
+                                                  Expanded(
+                                                    child: ElevatedButton(
+                                                      onPressed: () => Navigator.pop(context, true),
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: Colors.redAccent,
+                                                        foregroundColor: Colors.white,
+                                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                                                        padding: EdgeInsets.symmetric(vertical: 14),
+                                                      ),
+                                                      child: Text('刪除', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(context, true),
-                                            child: Text('刪除', style: TextStyle(color: Colors.red)),
-                                          ),
-                                        ],
+                                        ),
                                       ),
                                     );
                                     if (confirm == true) {
