@@ -14,6 +14,7 @@ import 'widgets/exercise_report_dialog.dart';
 import 'widgets/cycle_set_block.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -266,6 +267,7 @@ class _TabataScreenState extends State<TabataScreen> {
   void _startTimer() {
     _hasStarted = true;
     _startElapsedTimer(); // 運動一開始就啟動計時
+    WakelockPlus.enable(); // 防止螢幕關閉
     // Only set preset time if timer is not already running
     if (!_isRunning) {
       final state = Provider.of<TabataState>(context, listen: false);
@@ -302,6 +304,7 @@ class _TabataScreenState extends State<TabataScreen> {
   }
 
   void _stopTimer({bool userInitiated = false, bool showReportDirectly = false}) async {
+    WakelockPlus.disable(); // 停止時釋放 wakelock
     await _stopBgm();
     _timer.onStopTimer();
     setState(() {
@@ -418,6 +421,7 @@ class _TabataScreenState extends State<TabataScreen> {
   }
 
   void _resetTimer() async {
+    WakelockPlus.disable(); // 重設時釋放 wakelock
     await _stopBgm(); // reset 時也停止背景音樂
     _timer.onStopTimer();
     _timer.dispose();
@@ -1529,7 +1533,7 @@ class _TabataScreenState extends State<TabataScreen> {
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          if (_isBannerLoaded && _bannerAd != null)
+          if ((_isBannerLoaded && _bannerAd != null) && (showSetup || _selectedIndex == 1))
             Container(
               width: _bannerAd!.size.width.toDouble(),
               height: _bannerAd!.size.height.toDouble(),
@@ -1566,7 +1570,11 @@ class _TabataScreenState extends State<TabataScreen> {
 
   Future<void> _stopBgm() async {
     if (_bgmPlayer != null) {
-      await _bgmPlayer!.stop();
+      try {
+        await _bgmPlayer!.stop();
+      } catch (e) {
+        debugPrint('Error stopping BGM: ' + e.toString());
+      }
       await _bgmPlayer!.dispose();
       _bgmPlayer = null;
     }
