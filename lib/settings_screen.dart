@@ -397,8 +397,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 backgroundImage: NetworkImage(_currentUser!.photoUrl ?? ''),
                 child: _currentUser!.photoUrl == null ? Icon(Icons.account_circle) : null,
               ),
-              title: Text(_currentUser!.displayName ?? _currentUser!.email),
-              subtitle: Text(_currentUser!.email),
+              title: Text(
+                _currentUser!.displayName ?? _currentUser!.email,
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black87),
+              ),
+              subtitle: Text(
+                _currentUser!.email,
+                style: TextStyle(fontSize: 13, color: Colors.blueGrey[700]),
+              ),
               trailing: TextButton(
                 onPressed: _handleSignOut,
                 child: Text('登出'),
@@ -407,15 +413,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
           else
             ListTile(
               leading: Icon(Icons.account_circle),
-              title: Text('尚未登入 Google'),
+              title: Text(
+                '尚未登入 Google',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black87),
+              ),
               trailing: TextButton(
                 onPressed: _handleSignIn,
                 child: Text('登入'),
               ),
             ),
           SwitchListTile(
-            title: Text('背景音樂 (BGM)'),
-            subtitle: Text('啟用時，workout/rest 階段會播放背景音樂'),
+            title: Text(
+              '背景音樂 (BGM)',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black87),
+            ),
+            subtitle: Text(
+              '啟用時，workout/rest 階段會播放背景音樂',
+              style: TextStyle(fontSize: 13, color: Colors.blueGrey),
+            ),
             value: tabataState.bgmEnabled,
             onChanged: (value) {
               tabataState.setBgmEnabled(value);

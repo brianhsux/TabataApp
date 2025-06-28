@@ -1701,21 +1701,26 @@ class _TabataScreenState extends State<TabataScreen> {
     final state = Provider.of<TabataState>(context, listen: false);
     if (!state.bgmEnabled) return;
     await _stopBgm();
-    _bgmPlayer = AudioPlayer();
-    String asset = phase == 'workout' ? 'sounds/mystery.wav' : 'sounds/rest.wav';
-    await _bgmPlayer!.setSource(AssetSource(asset));
-    await _bgmPlayer!.setReleaseMode(ReleaseMode.loop);
-    await _bgmPlayer!.resume();
+    try {
+      _bgmPlayer = AudioPlayer(); // 每次都 new 新的
+      String asset = phase == 'workout' ? 'sounds/mystery.wav' : 'sounds/rest.wav';
+      await _bgmPlayer!.setSource(AssetSource(asset));
+      await _bgmPlayer!.setReleaseMode(ReleaseMode.loop);
+      await _bgmPlayer!.resume();
+    } catch (e) {
+      debugPrint('播放 BGM 失敗: $e');
+      _bgmPlayer = null;
+    }
   }
 
   Future<void> _stopBgm() async {
     if (_bgmPlayer != null) {
       try {
         await _bgmPlayer!.stop();
+        await _bgmPlayer!.dispose();
       } catch (e) {
         debugPrint('Error stopping BGM: ' + e.toString());
       }
-      await _bgmPlayer!.dispose();
       _bgmPlayer = null;
     }
   }
