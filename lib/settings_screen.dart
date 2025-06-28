@@ -24,6 +24,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'https://www.googleapis.com/auth/drive.file',
     ],
   );
+  bool _isLoading = false;
+  double _progress = 0.0;
 
   @override
   void initState() {
@@ -80,6 +82,87 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> restoreFromGoogleDrive() async {
+    if (_currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('請先登入 Google')));
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _progress = 0.0;
+    });
+    try {
+      final authHeaders = await _currentUser!.authHeaders;
+      final client = GoogleHttpClient(authHeaders);
+      final driveApi = drive.DriveApi(client);
+      // 1. 取得所有備份檔案
+      final fileList = await driveApi.files.list(q: "name contains 'tabata_backup_' and name contains '.db' and trashed = false", spaces: 'drive', $fields: 'files(id,name,modifiedTime)', orderBy: 'modifiedTime desc');
+      final files = fileList.files ?? [];
+      setState(() { _isLoading = false; });
+      if (files.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google Drive 沒有備份檔案')));
+        return;
+      }
+      // 2. 顯示選擇 Dialog
+      final selected = await showDialog<drive.File>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('選擇要還原的備份'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: files.length,
+                itemBuilder: (context, idx) {
+                  final f = files[idx];
+                  return ListTile(
+                    title: Text(f.name ?? ''),
+                    subtitle: Text(f.modifiedTime?.toLocal().toString() ?? ''),
+                    onTap: () => Navigator.pop(context, f),
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
+      if (selected == null) return;
+      // 3. 確認覆蓋
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('確認還原'),
+          content: Text('將覆蓋本地資料庫，確定要還原嗎？'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text('取消')),
+            ElevatedButton(onPressed: () => Navigator.pop(context, true), child: Text('確定')),
+          ],
+        ),
+      );
+      if (confirm != true) return;
+      // 4. 下載檔案並覆蓋
+      setState(() { _isLoading = true; _progress = 0.0; });
+      final media = await driveApi.files.get(selected.id!, downloadOptions: drive.DownloadOptions.fullMedia) as drive.Media;
+      final dbDir = await getDatabasesPath();
+      final dbFile = File('$dbDir/exercise_records.db');
+      final sink = dbFile.openWrite();
+      int downloaded = 0;
+      final total = media.length ?? 1;
+      await for (final chunk in media.stream) {
+        sink.add(chunk);
+        downloaded += chunk.length;
+        setState(() { _progress = downloaded / total; });
+      }
+      await sink.close();
+      setState(() { _isLoading = false; _progress = 0.0; });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('還原成功！')));
+    } catch (e) {
+      setState(() { _isLoading = false; _progress = 0.0; });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('還原失敗: ' + e.toString())));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final tabataState = context.watch<TabataState>();
@@ -132,6 +215,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onPressed: backupToGoogleDrive,
             ),
           ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ElevatedButton.icon(
+              icon: Icon(Icons.cloud_download),
+              label: Text('從 Google Drive 還原'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: restoreFromGoogleDrive,
+            ),
+          ),
+          if (_isLoading)
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  CircularProgressIndicator(value: _progress > 0 && _progress < 1 ? _progress : null),
+                  SizedBox(height: 12),
+                  Text(_progress > 0 ? '進度：${(_progress * 100).toStringAsFixed(0)}%' : '處理中...'),
+                ],
+              ),
+            ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ElevatedButton.icon(
