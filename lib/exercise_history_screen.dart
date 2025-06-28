@@ -218,103 +218,218 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                       });
                                     }
                                   : null,
-                              child: Stack(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // 主題色條
-                                  Positioned(
-                                    left: 0,
-                                    top: 0,
-                                    bottom: 0,
-                                    child: Container(
-                                      width: 6,
-                                      decoration: BoxDecoration(
-                                        color: Colors.blueAccent,
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(18),
-                                          bottomLeft: Radius.circular(18),
-                                        ),
+                                  // Checkbox
+                                  if (r.id != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 4, right: 4, top: 12),
+                                      child: Checkbox(
+                                        value: selected,
+                                        onChanged: (checked) {
+                                          setState(() {
+                                            if (checked == true) {
+                                              _selectedIds.add(r.id!);
+                                            } else {
+                                              _selectedIds.remove(r.id);
+                                            }
+                                          });
+                                        },
+                                        activeColor: Colors.blueAccent,
                                       ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        // Icon
-                                        Padding(
-                                          padding: const EdgeInsets.only(right: 12, top: 2),
-                                          child: Icon(Icons.fitness_center, color: Colors.blueAccent, size: 28),
-                                        ),
-                                        // 主要內容
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                  // 內容
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
                                             children: [
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Text(
-                                                      r.workoutName?.isNotEmpty == true ? r.workoutName! : '未命名活動',
-                                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, letterSpacing: 0.5),
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    _formatDuration(r.durationSeconds),
-                                                    style: TextStyle(fontSize: 14, color: Colors.blueAccent, fontWeight: FontWeight.w600),
-                                                  ),
-                                                ],
+                                              Expanded(
+                                                child: Text(
+                                                  r.workoutName?.isNotEmpty == true ? r.workoutName! : '未命名活動',
+                                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, letterSpacing: 0.5),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
                                               ),
-                                              SizedBox(height: 6),
-                                              Row(
-                                                children: [
-                                                  Icon(Icons.timer, size: 16, color: Colors.grey[500]),
-                                                  SizedBox(width: 3),
-                                                  Text('W:${r.workoutTime}s', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
-                                                  SizedBox(width: 10),
-                                                  Icon(Icons.self_improvement, size: 16, color: Colors.grey[500]),
-                                                  SizedBox(width: 3),
-                                                  Text('R:${r.restTime}s', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
-                                                  SizedBox(width: 10),
-                                                  Icon(Icons.repeat, size: 16, color: Colors.grey[500]),
-                                                  SizedBox(width: 3),
-                                                  Text('C:${r.cycles}', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
-                                                  SizedBox(width: 10),
-                                                  Icon(Icons.layers, size: 16, color: Colors.grey[500]),
-                                                  SizedBox(width: 3),
-                                                  Text('S:${r.sets}', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
-                                                ],
-                                              ),
-                                              SizedBox(height: 4),
-                                              Row(
-                                                children: [
-                                                  Icon(Icons.calendar_today, size: 15, color: Colors.grey[400]),
-                                                  SizedBox(width: 4),
-                                                  Text(_formatDateTime(r.dateTime), style: TextStyle(fontSize: 10, color: Colors.grey[500])),
-                                                ],
+                                              Text(
+                                                _formatDuration(r.durationSeconds),
+                                                style: TextStyle(fontSize: 14, color: Colors.blueAccent, fontWeight: FontWeight.w600),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        // Checkbox
-                                        if (r.id != null)
-                                          Padding(
-                                            padding: const EdgeInsets.only(left: 8, top: 2),
-                                            child: Checkbox(
-                                              value: selected,
-                                              onChanged: (checked) {
-                                                setState(() {
-                                                  if (checked == true) {
-                                                    _selectedIds.add(r.id!);
-                                                  } else {
-                                                    _selectedIds.remove(r.id);
-                                                  }
-                                                });
-                                              },
-                                            ),
+                                          SizedBox(height: 6),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.timer, size: 16, color: Colors.grey[500]),
+                                              SizedBox(width: 3),
+                                              Text('W:${r.workoutTime}s', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                              SizedBox(width: 10),
+                                              Icon(Icons.self_improvement, size: 16, color: Colors.grey[500]),
+                                              SizedBox(width: 3),
+                                              Text('R:${r.restTime}s', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                              SizedBox(width: 10),
+                                              Icon(Icons.repeat, size: 16, color: Colors.grey[500]),
+                                              SizedBox(width: 3),
+                                              Text('C:${r.cycles}', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                              SizedBox(width: 10),
+                                              Icon(Icons.layers, size: 16, color: Colors.grey[500]),
+                                              SizedBox(width: 3),
+                                              Text('S:${r.sets}', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                            ],
                                           ),
-                                      ],
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.calendar_today, size: 15, color: Colors.grey[400]),
+                                              SizedBox(width: 4),
+                                              Text(_formatDateTime(r.dateTime), style: TextStyle(fontSize: 10, color: Colors.grey[500])),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  // 編輯 icon
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8, top: 8),
+                                    child: Material(
+                                      color: Colors.orange.withOpacity(0.12),
+                                      shape: CircleBorder(),
+                                      child: InkWell(
+                                        customBorder: CircleBorder(),
+                                        onTap: () async {
+                                          final edited = await showDialog<ExerciseRecord>(
+                                            context: context,
+                                            builder: (context) {
+                                              final nameCtrl = TextEditingController(text: r.workoutName ?? '');
+                                              final workCtrl = TextEditingController(text: r.workoutTime.toString());
+                                              final restCtrl = TextEditingController(text: r.restTime.toString());
+                                              final cyclesCtrl = TextEditingController(text: r.cycles.toString());
+                                              final setsCtrl = TextEditingController(text: r.sets.toString());
+                                              final durationCtrl = TextEditingController(text: r.durationSeconds.toString());
+                                              final dateCtrl = TextEditingController(text: r.dateTime.substring(0, 16));
+                                              return Dialog(
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                                                  child: SingleChildScrollView(
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Icon(Icons.edit, color: Colors.orange, size: 22),
+                                                            SizedBox(width: 8),
+                                                            Text('編輯紀錄', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange)),
+                                                          ],
+                                                        ),
+                                                        SizedBox(height: 18),
+                                                        TextField(
+                                                          controller: nameCtrl,
+                                                          decoration: InputDecoration(labelText: '活動名稱'),
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: TextField(
+                                                                controller: workCtrl,
+                                                                keyboardType: TextInputType.number,
+                                                                decoration: InputDecoration(labelText: 'Work 秒數'),
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 8),
+                                                            Expanded(
+                                                              child: TextField(
+                                                                controller: restCtrl,
+                                                                keyboardType: TextInputType.number,
+                                                                decoration: InputDecoration(labelText: 'Rest 秒數'),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: TextField(
+                                                                controller: cyclesCtrl,
+                                                                keyboardType: TextInputType.number,
+                                                                decoration: InputDecoration(labelText: 'Cycles'),
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 8),
+                                                            Expanded(
+                                                              child: TextField(
+                                                                controller: setsCtrl,
+                                                                keyboardType: TextInputType.number,
+                                                                decoration: InputDecoration(labelText: 'Sets'),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        TextField(
+                                                          controller: durationCtrl,
+                                                          keyboardType: TextInputType.number,
+                                                          decoration: InputDecoration(labelText: '運動總秒數'),
+                                                        ),
+                                                        TextField(
+                                                          controller: dateCtrl,
+                                                          decoration: InputDecoration(labelText: '日期時間 (yyyy-MM-ddTHH:mm)'),
+                                                        ),
+                                                        SizedBox(height: 18),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: OutlinedButton(
+                                                                onPressed: () => Navigator.pop(context, null),
+                                                                child: Text('取消'),
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 12),
+                                                            Expanded(
+                                                              child: ElevatedButton(
+                                                                onPressed: () {
+                                                                  final edited = ExerciseRecord(
+                                                                    id: r.id,
+                                                                    workoutName: nameCtrl.text,
+                                                                    workoutTime: int.tryParse(workCtrl.text) ?? r.workoutTime,
+                                                                    restTime: int.tryParse(restCtrl.text) ?? r.restTime,
+                                                                    cycles: int.tryParse(cyclesCtrl.text) ?? r.cycles,
+                                                                    sets: int.tryParse(setsCtrl.text) ?? r.sets,
+                                                                    durationSeconds: int.tryParse(durationCtrl.text) ?? r.durationSeconds,
+                                                                    dateTime: dateCtrl.text.isNotEmpty ? dateCtrl.text : r.dateTime,
+                                                                  );
+                                                                  Navigator.pop(context, edited);
+                                                                },
+                                                                child: Text('儲存', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                          if (edited != null) {
+                                            await ExerciseDatabase.instance.updateRecord(edited);
+                                            setState(_refreshRecords);
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('已更新紀錄')),
+                                            );
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(6),
+                                          child: Icon(Icons.edit, color: Colors.orange, size: 20),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],

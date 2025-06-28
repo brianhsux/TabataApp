@@ -206,6 +206,17 @@ class ExerciseDatabase {
     );
   }
 
+  Future<int> updateRecord(ExerciseRecord record) async {
+    final db = await instance.database;
+    if (record.id == null) throw Exception('Record id is null');
+    return await db.update(
+      'exercise_records',
+      record.toMap(),
+      where: 'id = ?',
+      whereArgs: [record.id],
+    );
+  }
+
   Future close() async {
     final db = await instance.database;
     db.close();
