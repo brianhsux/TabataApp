@@ -312,6 +312,10 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                               final setsCtrl = TextEditingController(text: r.sets.toString());
                                               final durationCtrl = TextEditingController(text: r.durationSeconds.toString());
                                               final dateCtrl = TextEditingController(text: r.dateTime.substring(0, 16));
+                                              DateTime? pickedDateTime = DateTime.tryParse(r.dateTime);
+                                              final initialTime = pickedDateTime != null
+                                                  ? TimeOfDay(hour: pickedDateTime!.hour, minute: pickedDateTime!.minute)
+                                                  : TimeOfDay.now();
                                               return Dialog(
                                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                                                 child: Padding(
@@ -378,7 +382,53 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                         ),
                                                         TextField(
                                                           controller: dateCtrl,
+                                                          readOnly: true,
                                                           decoration: InputDecoration(labelText: '日期時間 (yyyy-MM-ddTHH:mm)'),
+                                                          onTap: () async {
+                                                            // 選日期
+                                                            final date = await showDatePicker(
+                                                              context: context,
+                                                              initialDate: pickedDateTime ?? DateTime.now(),
+                                                              firstDate: DateTime(2000),
+                                                              lastDate: DateTime(2100),
+                                                              builder: (context, child) {
+                                                                return Theme(
+                                                                  data: Theme.of(context).copyWith(
+                                                                    textTheme: Theme.of(context).textTheme.copyWith(
+                                                                      titleLarge: TextStyle(fontSize: 16),
+                                                                      bodyLarge: TextStyle(fontSize: 14),
+                                                                      labelLarge: TextStyle(fontSize: 13),
+                                                                    ),
+                                                                  ),
+                                                                  child: child!,
+                                                                );
+                                                              },
+                                                            );
+                                                            if (date != null) {
+                                                              // 選時間
+                                                              final time = await showTimePicker(
+                                                                context: context,
+                                                                initialTime: initialTime,
+                                                                builder: (context, child) {
+                                                                  return Theme(
+                                                                    data: Theme.of(context).copyWith(
+                                                                      textTheme: Theme.of(context).textTheme.copyWith(
+                                                                        titleLarge: TextStyle(fontSize: 16),
+                                                                        bodyLarge: TextStyle(fontSize: 14),
+                                                                        labelLarge: TextStyle(fontSize: 13),
+                                                                      ),
+                                                                    ),
+                                                                    child: child!,
+                                                                  );
+                                                                },
+                                                              );
+                                                              if (time != null) {
+                                                                pickedDateTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+                                                                final str = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}T${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                                                                dateCtrl.text = str;
+                                                              }
+                                                            }
+                                                          },
                                                         ),
                                                         SizedBox(height: 18),
                                                         Row(
