@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'main.dart';
+import 'main.dart' as main;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -43,9 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       await _googleSignIn.signIn();
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google 登入失敗: ' + error.toString())),
-      );
+      main.showAppSnackBar(context, 'Google 登入失敗: ' + error.toString(), icon: Icons.error, color: Colors.redAccent);
     }
   }
 
@@ -55,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> backupToGoogleDrive() async {
     if (_currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('請先登入 Google')));
+      main.showAppSnackBar(context, '請先登入 Google', icon: Icons.warning, color: Colors.orange);
       return;
     }
     setState(() {
@@ -68,7 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final dbFile = File('$dbDir/exercise_records.db');
       if (!await dbFile.exists()) {
         setState(() { _isLoading = false; _progress = 0.0; });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('找不到資料庫檔案')));
+        main.showAppSnackBar(context, '找不到資料庫檔案', icon: Icons.error, color: Colors.redAccent);
         return;
       }
       // 2. 取得 Google OAuth token
@@ -94,16 +92,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         uploadMedia: drive.Media(stream, total),
       );
       setState(() { _isLoading = false; _progress = 0.0; });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('備份成功！')));
+      main.showAppSnackBar(context, '備份成功！', icon: Icons.check_circle, color: Colors.green);
     } catch (e) {
       setState(() { _isLoading = false; _progress = 0.0; });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('備份失敗: ' + e.toString())));
+      main.showAppSnackBar(context, '備份失敗: ' + e.toString(), icon: Icons.error, color: Colors.redAccent);
     }
   }
 
   Future<void> restoreFromGoogleDrive() async {
     if (_currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('請先登入 Google')));
+      main.showAppSnackBar(context, '請先登入 Google', icon: Icons.warning, color: Colors.orange);
       return;
     }
     setState(() {
@@ -119,7 +117,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final files = fileList.files ?? [];
       setState(() { _isLoading = false; });
       if (files.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google Drive 沒有備份檔案')));
+        main.showAppSnackBar(context, 'Google Drive 沒有備份檔案', icon: Icons.info, color: Colors.blueGrey);
         return;
       }
       // 2. 顯示選擇 Dialog
@@ -245,31 +243,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             setState(() {
                                               fileList.removeAt(idx);
                                             });
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Row(
-                                                  children: [
-                                                    Icon(Icons.delete_forever_rounded, color: Colors.white, size: 22),
-                                                    SizedBox(width: 12),
-                                                    Expanded(
-                                                      child: Text(
-                                                        '已刪除備份 ${f.name}',
-                                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                backgroundColor: Colors.redAccent,
-                                                behavior: SnackBarBehavior.floating,
-                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                                duration: Duration(milliseconds: 1500),
-                                                elevation: 8,
-                                                margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                                              ),
-                                            );
+                                            main.showAppSnackBar(context, '已刪除備份 ${f.name}', icon: Icons.delete_forever_rounded, color: Colors.redAccent);
                                           } catch (e) {
-                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('刪除失敗: ' + e.toString())));
+                                            main.showAppSnackBar(context, '刪除失敗: ' + e.toString(), icon: Icons.error, color: Colors.redAccent);
                                           }
                                         }
                                       },
@@ -375,16 +351,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
       await sink.close();
       setState(() { _isLoading = false; _progress = 0.0; });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('還原成功！')));
+      main.showAppSnackBar(context, '還原成功！', icon: Icons.check_circle, color: Colors.green);
     } catch (e) {
       setState(() { _isLoading = false; _progress = 0.0; });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('還原失敗: ' + e.toString())));
+      main.showAppSnackBar(context, '還原失敗: ' + e.toString(), icon: Icons.error, color: Colors.redAccent);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final tabataState = context.watch<TabataState>();
+    final tabataState = context.watch<main.TabataState>();
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
@@ -492,9 +468,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onPressed: () async {
                 await tabataState.resetPreferences();
                 if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('已重設為預設值')),
-                );
+                main.showAppSnackBar(context, '已重設為預設值', icon: Icons.refresh, color: Colors.blueAccent);
               },
             ),
           ),

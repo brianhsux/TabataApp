@@ -1195,7 +1195,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                       } else {
                                         setState(() {});
                                       }
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已刪除活動 ${preset.name}')));
+                                      showAppSnackBar(context, '已刪除活動 ${preset.name}');
                                     }
                                   },
                                 ),
@@ -1214,7 +1214,7 @@ class _TabataScreenState extends State<TabataScreen> {
                             setState(() {
                               _currentPresetName = preset.name;
                             });
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已載入活動 ${preset.name}')));
+                            showAppSnackBar(context, '已載入活動 ${preset.name}');
                           }
                         },
                       ),
@@ -1314,7 +1314,7 @@ class _TabataScreenState extends State<TabataScreen> {
                       setState(() {
                         _currentPresetName = name;
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('已建立活動 $name')));
+                      showAppSnackBar(context, '已建立活動 $name');
                     }
                   },
                   child: Container(
@@ -1765,4 +1765,33 @@ class _TabataScreenState extends State<TabataScreen> {
     }
     return total > 0 ? (total - _remainingTime) / total : 0.0;
   }
+}
+
+// 將 showAppSnackBar 移到全域（class 外部）
+void showAppSnackBar(BuildContext context, String message, {IconData? icon, Color? color, int milliseconds = 1500}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          if (icon != null) ...[
+            Icon(icon, color: Colors.white, size: 22),
+            SizedBox(width: 12),
+          ],
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: color ?? Colors.blueAccent,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      duration: Duration(milliseconds: milliseconds),
+      elevation: 8,
+      margin: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    ),
+  );
 }

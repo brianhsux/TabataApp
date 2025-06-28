@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'exercise_db.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'main.dart' as main;
 
 class ExerciseHistoryScreen extends StatefulWidget {
   const ExerciseHistoryScreen({super.key});
@@ -470,9 +471,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                           if (edited != null) {
                                             await ExerciseDatabase.instance.updateRecord(edited);
                                             setState(_refreshRecords);
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text('已更新紀錄')),
-                                            );
+                                            main.showAppSnackBar(context, '已更新紀錄', icon: Icons.check_circle, color: Colors.green);
                                           }
                                         },
                                         child: Padding(
