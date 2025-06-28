@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.tabata_app"
+    namespace = "com.sports.tabata_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973" // Updated to match plugin requirements
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.tabata_app"
+        applicationId = "com.sports.tabata_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
