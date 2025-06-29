@@ -9,9 +9,12 @@ import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:sqflite/sqflite.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({super.key, this.onLocaleChanged});
+
+  final Function(Locale)? onLocaleChanged;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -363,7 +366,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final tabataState = context.watch<main.TabataState>();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: Text(AppLocalizations.of(context)!.settings),
       ),
       body: ListView(
         children: [
@@ -470,6 +473,66 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (!context.mounted) return;
                 main.showAppSnackBar(context, '已重設為預設值', icon: Icons.refresh, color: Colors.blueAccent);
               },
+            ),
+          ),
+          Card(
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: ListTile(
+              leading: Icon(Icons.language, color: Colors.blueAccent, size: 22),
+              title: Text(
+                AppLocalizations.of(context)!.changeLanguage,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              subtitle: Text(
+                Localizations.localeOf(context).languageCode == 'zh'
+                  ? '🇹🇼 繁體中文'
+                  : '🇺🇸 English',
+                style: TextStyle(fontSize: 13, color: Colors.blueGrey[700]),
+              ),
+              trailing: ElevatedButton.icon(
+                icon: Icon(Icons.arrow_drop_down, size: 18),
+                label: Text(
+                  Localizations.localeOf(context).languageCode == 'zh'
+                    ? '繁體中文'
+                    : 'English',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  textStyle: TextStyle(fontSize: 15),
+                ),
+                onPressed: () async {
+                  final locale = await showModalBottomSheet<Locale>(
+                    context: context,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
+                    builder: (context) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          leading: Text('🇺🇸', style: TextStyle(fontSize: 20)),
+                          title: Text('English', style: TextStyle(fontSize: 15)),
+                          onTap: () => Navigator.pop(context, Locale('en')),
+                        ),
+                        ListTile(
+                          leading: Text('🇹🇼', style: TextStyle(fontSize: 20)),
+                          title: Text('繁體中文', style: TextStyle(fontSize: 15)),
+                          onTap: () => Navigator.pop(context, Locale('zh')),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (locale != null && widget.onLocaleChanged != null) {
+                    widget.onLocaleChanged!(locale);
+                  }
+                },
+              ),
             ),
           ),
         ],

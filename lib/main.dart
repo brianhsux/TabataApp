@@ -15,6 +15,8 @@ import 'widgets/cycle_set_block.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,8 +29,21 @@ void main() async {
   );
 }
 
-class TabataApp extends StatelessWidget {
+class TabataApp extends StatefulWidget {
   const TabataApp({super.key});
+
+  @override
+  State<TabataApp> createState() => _TabataAppState();
+}
+
+class _TabataAppState extends State<TabataApp> {
+  Locale? _locale;
+
+  void setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +57,20 @@ class TabataApp extends StatelessWidget {
           bodyMedium: TextStyle(fontSize: 18, color: Colors.black),
         ),
       ),
-      home: TabataScreen(),
+      locale: _locale,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('zh'),
+      ],
+      home: TabataScreen(
+        onLocaleChanged: setLocale,
+      ),
     );
   }
 }
@@ -128,7 +156,9 @@ class TabataState with ChangeNotifier {
 }
 
 class TabataScreen extends StatefulWidget {
-  const TabataScreen({super.key});
+  const TabataScreen({super.key, required this.onLocaleChanged});
+
+  final Function(Locale) onLocaleChanged;
 
   @override
   _TabataScreenState createState() => _TabataScreenState();
@@ -1664,7 +1694,11 @@ class _TabataScreenState extends State<TabataScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SettingsScreen()),
+                MaterialPageRoute(
+                  builder: (context) => SettingsScreen(
+                    onLocaleChanged: widget.onLocaleChanged,
+                  ),
+                ),
               );
             },
           ),
