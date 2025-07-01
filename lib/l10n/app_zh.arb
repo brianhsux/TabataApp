@@ -70,5 +70,7 @@
   "activityLoaded": "已載入活動 {activity}",
   "activityCreated": "已建立活動 {activity}",
   "editCycles": "編輯循環",
-  "editSets": "編輯組數"
+  "editSets": "編輯組數",
+  "chooseBackup": "選擇要還原的備份",
+  "confirmRestore": "確認還原"
 } 

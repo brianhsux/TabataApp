@@ -79,7 +79,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restSeconds => 'Rest Seconds';
 
   @override
-  String get dateTime => 'DateTime (yyyy-MM-ddTHH:mm)';
+  String get dateTime => 'DateTime ';
 
   @override
   String elapsed(Object time) {
@@ -250,4 +250,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editSets => 'Edit Sets';
+
+  @override
+  String get chooseBackup => 'Select backup to restore';
+
+  @override
+  String get confirmRestore => 'Confirm Restore';
 }

@@ -143,7 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Icon(Icons.cloud_download, color: Colors.blueAccent, size: 22),
                         SizedBox(width: 8),
-                        Text('選擇要還原的備份', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                        Text(AppLocalizations.of(context)!.chooseBackup, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                       ],
                     ),
                     SizedBox(height: 16),
@@ -266,7 +266,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () => Navigator.pop(context, null),
-                        child: Text('取消', style: TextStyle(color: Colors.grey[600], fontSize: 15)),
+                        child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.grey[600], fontSize: 15)),
                       ),
                     ),
                   ],
@@ -294,7 +294,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
                     SizedBox(width: 8),
-                    Text('確認還原', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange)),
+                    Text(AppLocalizations.of(context)!.confirmRestore, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange)),
                   ],
                 ),
                 SizedBox(height: 18),
@@ -386,28 +386,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               trailing: TextButton(
                 onPressed: _handleSignOut,
-                child: Text('登出'),
+                child: Text(AppLocalizations.of(context)!.signOut),
               ),
             )
           else
             ListTile(
               leading: Icon(Icons.account_circle),
               title: Text(
-                '尚未登入 Google',
+                AppLocalizations.of(context)!.notSignedInGoogle,
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black87),
               ),
               trailing: TextButton(
                 onPressed: _handleSignIn,
-                child: Text('登入'),
+                child: Text(AppLocalizations.of(context)!.signIn),
               ),
             ),
           SwitchListTile(
             title: Text(
-              '背景音樂 (BGM)',
+              AppLocalizations.of(context)!.bgm,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black87),
             ),
             subtitle: Text(
-              '啟用時，workout/rest 階段會播放背景音樂',
+              AppLocalizations.of(context)!.bgmHint,
               style: TextStyle(fontSize: 13, color: Colors.blueGrey),
             ),
             value: tabataState.bgmEnabled,
@@ -420,7 +420,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ElevatedButton.icon(
               icon: Icon(Icons.cloud_upload),
-              label: Text('備份到 Google Drive'),
+              label: Text(AppLocalizations.of(context)!.backupToDrive),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueAccent,
                 foregroundColor: Colors.white,
@@ -432,7 +432,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ElevatedButton.icon(
               icon: Icon(Icons.cloud_download),
-              label: Text('從 Google Drive 還原'),
+              label: Text(AppLocalizations.of(context)!.restoreFromDrive),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
@@ -463,7 +463,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ElevatedButton.icon(
               icon: Icon(Icons.refresh),
-              label: Text('重設所有設定'),
+              label: Text(AppLocalizations.of(context)!.resetAllSettings),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
                 foregroundColor: Colors.white,
@@ -471,7 +471,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onPressed: () async {
                 await tabataState.resetPreferences();
                 if (!context.mounted) return;
-                main.showAppSnackBar(context, '已重設為預設值', icon: Icons.refresh, color: Colors.blueAccent);
+                main.showAppSnackBar(context, AppLocalizations.of(context)!.resetToDefault, icon: Icons.refresh, color: Colors.blueAccent);
               },
             ),
           ),

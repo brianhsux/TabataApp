@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @dateTime.
   ///
   /// In en, this message translates to:
-  /// **'DateTime (yyyy-MM-ddTHH:mm)'**
+  /// **'DateTime '**
   String get dateTime;
 
   /// No description provided for @elapsed.
@@ -529,6 +529,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Sets'**
   String get editSets;
+
+  /// No description provided for @chooseBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Select backup to restore'**
+  String get chooseBackup;
+
+  /// No description provided for @confirmRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Restore'**
+  String get confirmRestore;
 }
 
 class _AppLocalizationsDelegate

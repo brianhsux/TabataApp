@@ -21,7 +21,7 @@
   "activityName": "Activity Name",
   "workSeconds": "Work Seconds",
   "restSeconds": "Rest Seconds",
-  "dateTime": "DateTime (yyyy-MM-ddTHH:mm)",
+  "dateTime": "DateTime ",
   "elapsed": "Elapsed: {time}",
   "done": "Done",
   "go": "Go",
@@ -70,5 +70,7 @@
   "activityLoaded": "Activity {activity} loaded",
   "activityCreated": "Activity {activity} created",
   "editCycles": "Edit Cycles",
-  "editSets": "Edit Sets"
+  "editSets": "Edit Sets",
+  "chooseBackup": "Select backup to restore",
+  "confirmRestore": "Confirm Restore"
 } 

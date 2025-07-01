@@ -249,4 +249,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get editSets => '編輯組數';
+
+  @override
+  String get chooseBackup => '選擇要還原的備份';
+
+  @override
+  String get confirmRestore => '確認還原';
 }
