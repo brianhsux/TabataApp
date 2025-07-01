@@ -92,5 +92,6 @@
   "save": "Save",
   "recordUpdated": "Record updated",
   "languageEnglish": "English",
-  "languageChinese": "Traditional Chinese"
+  "languageChinese": "Traditional Chinese",
+  "languageChineseSimplified": "Simplified Chinese"
 } 

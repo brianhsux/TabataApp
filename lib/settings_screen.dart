@@ -487,17 +487,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               subtitle: Text(
-                Localizations.localeOf(context).languageCode == 'zh'
-                  ? '🇹🇼 ' + AppLocalizations.of(context)!.languageChinese
-                  : '🇺🇸 ' + AppLocalizations.of(context)!.languageEnglish,
+                Localizations.localeOf(context).languageCode == 'zh' && Localizations.localeOf(context).scriptCode == 'Hans'
+                  ? '🇨🇳 ' + '简体中文'
+                  : Localizations.localeOf(context).languageCode == 'zh'
+                    ? '🇹🇼 ' + AppLocalizations.of(context)!.languageChinese
+                    : '🇺🇸 ' + AppLocalizations.of(context)!.languageEnglish,
                 style: TextStyle(fontSize: 13, color: Colors.blueGrey[700]),
               ),
               trailing: ElevatedButton.icon(
                 icon: Icon(Icons.arrow_drop_down, size: 18),
                 label: Text(
-                  Localizations.localeOf(context).languageCode == 'zh'
-                    ? AppLocalizations.of(context)!.languageChinese
-                    : AppLocalizations.of(context)!.languageEnglish,
+                  Localizations.localeOf(context).languageCode == 'zh' && Localizations.localeOf(context).scriptCode == 'Hans'
+                    ? AppLocalizations.of(context)!.languageChineseSimplified
+                    : Localizations.localeOf(context).languageCode == 'zh'
+                      ? AppLocalizations.of(context)!.languageChinese
+                      : AppLocalizations.of(context)!.languageEnglish,
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -525,6 +529,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           leading: Text('🇹🇼', style: TextStyle(fontSize: 20)),
                           title: Text(AppLocalizations.of(context)!.languageChinese, style: TextStyle(fontSize: 15)),
                           onTap: () => Navigator.pop(context, Locale('zh')),
+                        ),
+                        ListTile(
+                          leading: Text('🇨🇳', style: TextStyle(fontSize: 20)),
+                          title: Text(AppLocalizations.of(context)!.languageChineseSimplified, style: TextStyle(fontSize: 15)),
+                          onTap: () => Navigator.pop(context, Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans')),
                         ),
                       ],
                     ),

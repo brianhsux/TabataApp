@@ -92,5 +92,6 @@
   "save": "儲存",
   "recordUpdated": "已更新紀錄",
   "languageEnglish": "英文",
-  "languageChinese": "繁體中文"
+  "languageChinese": "繁體中文",
+  "languageChineseSimplified": "簡體中文"
 } 

@@ -67,6 +67,7 @@ class _TabataAppState extends State<TabataApp> {
       supportedLocales: const [
         Locale('en'),
         Locale('zh'),
+        Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
       ],
       home: TabataScreen(
         onLocaleChanged: setLocale,

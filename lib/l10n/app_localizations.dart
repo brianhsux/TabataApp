@@ -96,6 +96,7 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('zh'),
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
   ];
 
   /// No description provided for @title.
@@ -661,6 +662,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Traditional Chinese'**
   String get languageChinese;
+
+  /// No description provided for @languageChineseSimplified.
+  ///
+  /// In en, this message translates to:
+  /// **'Simplified Chinese'**
+  String get languageChineseSimplified;
 }
 
 class _AppLocalizationsDelegate
@@ -681,6 +688,18 @@ class _AppLocalizationsDelegate
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+script codes are specified.
+  switch (locale.languageCode) {
+    case 'zh':
+      {
+        switch (locale.scriptCode) {
+          case 'Hans':
+            return AppLocalizationsZhHans();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'en':
