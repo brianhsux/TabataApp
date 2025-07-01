@@ -9,7 +9,8 @@ import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:sqflite/sqflite.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key, this.onLocaleChanged});
