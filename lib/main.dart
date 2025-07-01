@@ -371,7 +371,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 Icon(Icons.warning_amber_rounded, color: Colors.deepOrange, size: 48),
                 SizedBox(height: 18),
                 Text(
-                  '確定要停止運動嗎？',
+                  AppLocalizations.of(context)!.confirmStopWorkout,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -382,7 +382,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 ),
                 SizedBox(height: 16),
                 Text(
-                  '這將結束本次運動，且不會儲存紀錄。',
+                  AppLocalizations.of(context)!.endWorkoutNoSave,
                   style: TextStyle(fontSize: 16, color: Colors.black87),
                   textAlign: TextAlign.center,
                 ),
@@ -398,7 +398,7 @@ class _TabataScreenState extends State<TabataScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                           padding: EdgeInsets.symmetric(vertical: 14),
                         ),
-                        child: Text('否', style: TextStyle(fontSize: 16)),
+                        child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(fontSize: 16)),
                       ),
                     ),
                     SizedBox(width: 18),
@@ -411,7 +411,7 @@ class _TabataScreenState extends State<TabataScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                           padding: EdgeInsets.symmetric(vertical: 14),
                         ),
-                        child: Text('是', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ),
                   ],
@@ -468,7 +468,7 @@ class _TabataScreenState extends State<TabataScreen> {
               Icon(Icons.emoji_events_rounded, color: Colors.amber.shade700, size: 54),
               SizedBox(height: 18),
               Text(
-                '運動結果報告',
+                AppLocalizations.of(context)!.workoutResultReport,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -487,17 +487,17 @@ class _TabataScreenState extends State<TabataScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _reportRow('運動時間', _formatDuration(record.durationSeconds)),
+                    _reportRow(AppLocalizations.of(context)!.workoutTime, _formatDuration(record.durationSeconds)),
                     SizedBox(height: 8),
-                    _reportRow('Workout 秒數', '$totalWorkout'),
+                    _reportRow(AppLocalizations.of(context)!.workoutSeconds, '$totalWorkout'),
                     SizedBox(height: 8),
-                    _reportRow('Rest 秒數', '$totalRest'),
+                    _reportRow(AppLocalizations.of(context)!.restSeconds, '$totalRest'),
                     SizedBox(height: 8),
-                    _reportRow('Cycles', '${record.cycles}'),
+                    _reportRow(AppLocalizations.of(context)!.cycles, '${record.cycles}'),
                     SizedBox(height: 8),
-                    _reportRow('Sets', '${record.sets}'),
+                    _reportRow(AppLocalizations.of(context)!.sets, '${record.sets}'),
                     SizedBox(height: 8),
-                    _reportRow('日期', _formatDateTime(record.dateTime)),
+                    _reportRow(AppLocalizations.of(context)!.dateTime, _formatDateTime(record.dateTime)),
                   ],
                 ),
               ),
@@ -515,7 +515,7 @@ class _TabataScreenState extends State<TabataScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                     padding: EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: Text('確定', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  child: Text(AppLocalizations.of(context)!.confirm, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 ),
               ),
             ],
@@ -683,7 +683,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 Icon(iconData, color: mainColor, size: 40),
                 SizedBox(height: 12),
                 Text(
-                  '設定 $phase 時間',
+                  AppLocalizations.of(context)!.setPhaseTime(phase),
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -696,7 +696,7 @@ class _TabataScreenState extends State<TabataScreen> {
                   controller: controller,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    hintText: '請輸入秒數',
+                    hintText: AppLocalizations.of(context)!.pleaseEnterSeconds,
                     filled: true,
                     fillColor: mainColor.withOpacity(0.08),
                     contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -720,7 +720,7 @@ class _TabataScreenState extends State<TabataScreen> {
                           side: BorderSide(color: Colors.grey.shade300),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
-                        child: Text('取消'),
+                        child: Text(AppLocalizations.of(context)!.cancel),
                       ),
                     ),
                     SizedBox(width: 16),
@@ -739,7 +739,7 @@ class _TabataScreenState extends State<TabataScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           padding: EdgeInsets.symmetric(vertical: 14),
                         ),
-                        child: Text('確認', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        child: Text(AppLocalizations.of(context)!.confirm, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ),
                   ],
@@ -766,7 +766,7 @@ class _TabataScreenState extends State<TabataScreen> {
         final isLastRest = _currentPhase == 'REST' &&
           _currentCycle == state.cycles &&
           _currentSet == state.sets;
-        displayText = isLastRest ? 'Done' : 'Go';
+        displayText = isLastRest ? AppLocalizations.of(context)!.done : AppLocalizations.of(context)!.go;
       } else {
         displayText = displayTime.toString();
       }
@@ -787,7 +787,7 @@ class _TabataScreenState extends State<TabataScreen> {
           end: Alignment.bottomRight,
         );
         textColor = Colors.orange.shade900;
-        phaseText = 'Prep';
+        phaseText = AppLocalizations.of(context)!.prep;
         iconData = Icons.timer;
         break;
       case 'WORK':
@@ -797,7 +797,7 @@ class _TabataScreenState extends State<TabataScreen> {
           end: Alignment.bottomRight,
         );
         textColor = Colors.white;
-        phaseText = 'Work';
+        phaseText = AppLocalizations.of(context)!.work;
         iconData = Icons.fitness_center;
         break;
       case 'REST':
@@ -807,7 +807,7 @@ class _TabataScreenState extends State<TabataScreen> {
           end: Alignment.bottomRight,
         );
         textColor = Colors.white;
-        phaseText = 'Rest';
+        phaseText = AppLocalizations.of(context)!.rest;
         iconData = Icons.self_improvement;
         break;
       default:
@@ -859,7 +859,7 @@ class _TabataScreenState extends State<TabataScreen> {
               Text(
                 displayText,
                 style: TextStyle(
-                  fontSize: displayText == 'Done' ? 72 * scale : 120 * scale,
+                  fontSize: displayText == AppLocalizations.of(context)!.done ? 72 * scale : 120 * scale,
                   fontWeight: FontWeight.bold,
                   color: textColor,
                   shadows: [
@@ -877,7 +877,7 @@ class _TabataScreenState extends State<TabataScreen> {
               Icon(Icons.repeat, color: textColor, size: 24 * scale),
               SizedBox(width: 8 * scale),
               Text(
-                'Cycle:  $_currentCycle / ${state.cycles}',
+                AppLocalizations.of(context)!.cycle(_currentCycle, state.cycles),
                 style: TextStyle(fontSize: 24 * scale, color: textColor),
               ),
             ],
@@ -889,7 +889,7 @@ class _TabataScreenState extends State<TabataScreen> {
               Icon(Icons.layers, color: textColor, size: 24 * scale),
               SizedBox(width: 8 * scale),
               Text(
-                'Set:  $_currentSet / ${state.sets}',
+                AppLocalizations.of(context)!.set(_currentSet, state.sets),
                 style: TextStyle(fontSize: 24 * scale, color: textColor),
               ),
             ],
@@ -901,7 +901,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 final d = Duration(seconds: _elapsedSeconds);
                 String twoDigits(int n) => n.toString().padLeft(2, '0');
                 final timeStr = '${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}';
-                return Text('本次運動已進行：$timeStr', style: TextStyle(fontSize: 18 * scale, color: Colors.blueGrey));
+                return Text(AppLocalizations.of(context)!.elapsed(timeStr), style: TextStyle(fontSize: 18 * scale, color: Colors.blueGrey));
               },
             ),
           SizedBox(height: 24 * scale),
@@ -912,7 +912,7 @@ class _TabataScreenState extends State<TabataScreen> {
               // 上一個狀態
               IconButton(
                 icon: Icon(Icons.skip_previous, size: 36 * scale, color: textColor),
-                tooltip: '上一個狀態',
+                tooltip: AppLocalizations.of(context)!.previousState,
                 onPressed: () {
                   final state = context.read<TabataState>();
                   if (_currentPhase == 'REST') {
@@ -946,7 +946,7 @@ class _TabataScreenState extends State<TabataScreen> {
               // 暫停/繼續按鈕
               IconButton(
                 icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow, size: 48 * scale, color: textColor),
-                tooltip: _isRunning ? '暫停' : '繼續',
+                tooltip: _isRunning ? AppLocalizations.of(context)!.pause : AppLocalizations.of(context)!.continueWorkout,
                 onPressed: () {
                   if (_isRunning) {
                     _pauseTimer();
@@ -958,7 +958,7 @@ class _TabataScreenState extends State<TabataScreen> {
               // 下一個狀態
               IconButton(
                 icon: Icon(Icons.skip_next, size: 36 * scale, color: textColor),
-                tooltip: '下一個狀態',
+                tooltip: AppLocalizations.of(context)!.nextState,
                 onPressed: () {
                   final state = context.read<TabataState>();
                   if (_currentPhase == 'PREP') {
@@ -1054,7 +1054,7 @@ class _TabataScreenState extends State<TabataScreen> {
               ),
               alignment: Alignment.center,
               child: Text(
-                _currentPresetName ?? '尚未選擇活動',
+                _currentPresetName ?? AppLocalizations.of(context)!.untitledActivity,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.deepPurple.shade900,
@@ -1105,7 +1105,7 @@ class _TabataScreenState extends State<TabataScreen> {
                               Icon(Icons.swap_horiz, color: Colors.blue.shade700, size: 22),
                               SizedBox(width: 6),
                               Text(
-                                '切換活動',
+                                AppLocalizations.of(context)!.switchActivity,
                                 style: TextStyle(
                                   color: Colors.blue.shade900,
                                   fontWeight: FontWeight.bold,
@@ -1152,7 +1152,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                 ),
                                 IconButton(
                                   icon: Icon(Icons.delete_forever_rounded, color: Colors.redAccent, size: 22),
-                                  tooltip: '刪除活動',
+                                  tooltip: AppLocalizations.of(context)!.deleteActivity,
                                   onPressed: () async {
                                     final confirm = await showDialog<bool>(
                                       context: context,
@@ -1166,7 +1166,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                               Icon(Icons.delete_forever_rounded, color: Colors.redAccent, size: 48),
                                               SizedBox(height: 18),
                                               Text(
-                                                '刪除活動',
+                                                AppLocalizations.of(context)!.deleteActivity,
                                                 style: TextStyle(
                                                   fontSize: 22,
                                                   fontWeight: FontWeight.bold,
@@ -1177,7 +1177,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                               ),
                                               SizedBox(height: 16),
                                               Text(
-                                                '確定要刪除「${preset.name}」這個活動嗎？',
+                                                AppLocalizations.of(context)!.confirmDeleteActivity(preset.name),
                                                 style: TextStyle(fontSize: 16, color: Colors.black87),
                                                 textAlign: TextAlign.center,
                                               ),
@@ -1193,7 +1193,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                                                         padding: EdgeInsets.symmetric(vertical: 14),
                                                       ),
-                                                      child: Text('取消', style: TextStyle(fontSize: 16)),
+                                                      child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(fontSize: 16)),
                                                     ),
                                                   ),
                                                   SizedBox(width: 18),
@@ -1206,7 +1206,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                                                         padding: EdgeInsets.symmetric(vertical: 14),
                                                       ),
-                                                      child: Text('刪除', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                                      child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                                     ),
                                                   ),
                                                 ],
@@ -1225,7 +1225,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                       } else {
                                         setState(() {});
                                       }
-                                      showAppSnackBar(context, '已刪除活動 ${preset.name}');
+                                      showAppSnackBar(context, AppLocalizations.of(context)!.activityDeleted(preset.name));
                                     }
                                   },
                                 ),
@@ -1244,7 +1244,7 @@ class _TabataScreenState extends State<TabataScreen> {
                             setState(() {
                               _currentPresetName = preset.name;
                             });
-                            showAppSnackBar(context, '已載入活動 ${preset.name}');
+                            showAppSnackBar(context, AppLocalizations.of(context)!.activityLoaded(preset.name));
                           }
                         },
                       ),
@@ -1271,7 +1271,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                 Icon(Icons.add_circle_outline, color: Colors.pink.shade400, size: 40),
                                 SizedBox(height: 12),
                                 Text(
-                                  '建立新活動',
+                                  AppLocalizations.of(context)!.createNewActivity,
                                   style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
@@ -1283,7 +1283,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                 TextField(
                                   controller: controller,
                                   decoration: InputDecoration(
-                                    hintText: '請輸入活動名稱',
+                                    hintText: AppLocalizations.of(context)!.pleaseEnterActivityName,
                                     filled: true,
                                     fillColor: Colors.pink.shade50,
                                     contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -1307,7 +1307,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                           side: BorderSide(color: Colors.grey.shade300),
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                         ),
-                                        child: Text('取消'),
+                                        child: Text(AppLocalizations.of(context)!.cancel),
                                       ),
                                     ),
                                     SizedBox(width: 16),
@@ -1320,7 +1320,7 @@ class _TabataScreenState extends State<TabataScreen> {
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                           padding: EdgeInsets.symmetric(vertical: 14),
                                         ),
-                                        child: Text('建立', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                        child: Text(AppLocalizations.of(context)!.create, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                       ),
                                     ),
                                   ],
@@ -1344,7 +1344,7 @@ class _TabataScreenState extends State<TabataScreen> {
                       setState(() {
                         _currentPresetName = name;
                       });
-                      showAppSnackBar(context, '已建立活動 $name');
+                      showAppSnackBar(context, AppLocalizations.of(context)!.activityCreated(name));
                     }
                   },
                   child: Container(
@@ -1371,7 +1371,7 @@ class _TabataScreenState extends State<TabataScreen> {
                         Icon(Icons.add_circle_outline, color: Colors.pink.shade700, size: 22),
                         SizedBox(width: 6),
                         Text(
-                          '建立新活動',
+                          AppLocalizations.of(context)!.createNewActivity,
                           style: TextStyle(
                             color: Colors.pink.shade900,
                             fontWeight: FontWeight.bold,
@@ -1420,7 +1420,7 @@ class _TabataScreenState extends State<TabataScreen> {
               children: [
                 Icon(Icons.timer, color: Colors.orange.shade900, size: 20 * scale),
                 SizedBox(width: 8 * scale),
-                Text('Prep', style: TextStyle(fontSize: 18 * scale, color: Colors.orange.shade900, fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context)!.prep, style: TextStyle(fontSize: 18 * scale, color: Colors.orange.shade900, fontWeight: FontWeight.bold)),
                 SizedBox(width: 12 * scale),
                 Text(
                   state.prepTime.toString(),
@@ -1458,7 +1458,7 @@ class _TabataScreenState extends State<TabataScreen> {
               children: [
                 Icon(Icons.fitness_center, color: Colors.white, size: 20 * scale),
                 SizedBox(width: 8 * scale),
-                Text('Work', style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context)!.work, style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold)),
                 SizedBox(width: 12 * scale),
                 Text(
                   state.workTime.toString(),
@@ -1496,7 +1496,7 @@ class _TabataScreenState extends State<TabataScreen> {
               children: [
                 Icon(Icons.self_improvement, color: Colors.white, size: 20 * scale),
                 SizedBox(width: 8 * scale),
-                Text('Rest', style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context)!.rest, style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold)),
                 SizedBox(width: 12 * scale),
                 Text(
                   state.restTime.toString(),
@@ -1534,7 +1534,7 @@ class _TabataScreenState extends State<TabataScreen> {
               children: [
                 Icon(Icons.repeat, color: Colors.white, size: 20 * scale),
                 SizedBox(width: 8 * scale),
-                Text('Cycles', style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
+                Text(AppLocalizations.of(context)!.cycles, style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
                 SizedBox(width: 12 * scale),
                 Text(
                   state.cycles.toString(),
@@ -1546,7 +1546,7 @@ class _TabataScreenState extends State<TabataScreen> {
                   onPressed: () {
                     _showEditDialog('Cycles', state.cycles, (v) => state.updateCycles(v));
                   },
-                  tooltip: '編輯 Cycles',
+                  tooltip: AppLocalizations.of(context)!.editCycles,
                 ),
               ],
             ),
@@ -1575,7 +1575,7 @@ class _TabataScreenState extends State<TabataScreen> {
               children: [
                 Icon(Icons.layers, color: Colors.white, size: 20 * scale),
                 SizedBox(width: 8 * scale),
-                Text('Sets', style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
+                Text(AppLocalizations.of(context)!.sets, style: TextStyle(fontSize: 18 * scale, color: Colors.white)),
                 SizedBox(width: 12 * scale),
                 Text(
                   state.sets.toString(),
@@ -1587,7 +1587,7 @@ class _TabataScreenState extends State<TabataScreen> {
                   onPressed: () {
                     _showEditDialog('Sets', state.sets, (v) => state.updateSets(v));
                   },
-                  tooltip: '編輯 Sets',
+                  tooltip: AppLocalizations.of(context)!.editSets,
                 ),
               ],
             ),
@@ -1657,7 +1657,7 @@ class _TabataScreenState extends State<TabataScreen> {
                       height: 52 * scale,
                       alignment: Alignment.center,
                       child: Text(
-                        'Start',
+                        AppLocalizations.of(context)!.start,
                         style: TextStyle(
                           fontSize: 18 * scale,
                           fontWeight: FontWeight.bold,
@@ -1680,11 +1680,11 @@ class _TabataScreenState extends State<TabataScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tabata Timer', style: TextStyle(fontSize: 22 * scale)),
+        title: Text(AppLocalizations.of(context)!.tabataTimer, style: TextStyle(fontSize: 22 * scale)),
         leading: !showSetup
             ? IconButton(
                 icon: Icon(Icons.close, size: 22 * scale),
-                tooltip: 'Stop',
+                tooltip: AppLocalizations.of(context)!.stop,
                 onPressed: () => _stopTimer(userInitiated: true),
               )
             : null,

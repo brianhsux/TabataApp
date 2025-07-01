@@ -55,7 +55,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get untitledActivity => 'Untitled Activity';
 
   @override
-  String get createNewActivity => 'Create New Activity';
+  String get createNewActivity => 'New Activity';
 
   @override
   String get pleaseEnterActivityName => 'Please enter activity name';
@@ -191,4 +191,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get edit => 'Edit';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get workoutResultReport => 'Workout Result Report';
+
+  @override
+  String get workoutTime => 'Workout Time';
+
+  @override
+  String get workoutSeconds => 'Workout Seconds';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get previousState => 'Previous State';
+
+  @override
+  String get pause => 'Pause';
+
+  @override
+  String get continueWorkout => 'Continue';
+
+  @override
+  String get nextState => 'Next State';
+
+  @override
+  String get switchActivity => 'Switch Activity';
+
+  @override
+  String get deleteActivity => 'Delete Activity';
+
+  @override
+  String confirmDeleteActivity(Object activity) {
+    return 'Are you sure you want to delete the activity \"$activity\"?';
+  }
+
+  @override
+  String activityDeleted(Object activity) {
+    return 'Activity $activity deleted';
+  }
+
+  @override
+  String activityLoaded(Object activity) {
+    return 'Activity $activity loaded';
+  }
+
+  @override
+  String activityCreated(Object activity) {
+    return 'Activity $activity created';
+  }
+
+  @override
+  String get editCycles => 'Edit Cycles';
+
+  @override
+  String get editSets => 'Edit Sets';
 }

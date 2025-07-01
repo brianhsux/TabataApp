@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @createNewActivity.
   ///
   /// In en, this message translates to:
-  /// **'Create New Activity'**
+  /// **'New Activity'**
   String get createNewActivity;
 
   /// No description provided for @pleaseEnterActivityName.
@@ -427,6 +427,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit'**
   String get edit;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @workoutResultReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Result Report'**
+  String get workoutResultReport;
+
+  /// No description provided for @workoutTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Time'**
+  String get workoutTime;
+
+  /// No description provided for @workoutSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Seconds'**
+  String get workoutSeconds;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @previousState.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous State'**
+  String get previousState;
+
+  /// No description provided for @pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pause;
+
+  /// No description provided for @continueWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueWorkout;
+
+  /// No description provided for @nextState.
+  ///
+  /// In en, this message translates to:
+  /// **'Next State'**
+  String get nextState;
+
+  /// No description provided for @switchActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Activity'**
+  String get switchActivity;
+
+  /// No description provided for @deleteActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Activity'**
+  String get deleteActivity;
+
+  /// No description provided for @confirmDeleteActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the activity \"{activity}\"?'**
+  String confirmDeleteActivity(Object activity);
+
+  /// No description provided for @activityDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity {activity} deleted'**
+  String activityDeleted(Object activity);
+
+  /// No description provided for @activityLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity {activity} loaded'**
+  String activityLoaded(Object activity);
+
+  /// No description provided for @activityCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity {activity} created'**
+  String activityCreated(Object activity);
+
+  /// No description provided for @editCycles.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Cycles'**
+  String get editCycles;
+
+  /// No description provided for @editSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Sets'**
+  String get editSets;
 }
 
 class _AppLocalizationsDelegate

@@ -53,5 +53,22 @@
   "viewExerciseRatio": "查看運動佔比",
   "exercised": "有運動",
   "noExercise": "沒運動",
-  "edit": "編輯"
+  "edit": "編輯",
+  "delete": "刪除",
+  "workoutResultReport": "運動結果報告",
+  "workoutTime": "運動時間",
+  "workoutSeconds": "運動秒數",
+  "confirm": "確認",
+  "previousState": "上一個狀態",
+  "pause": "暫停",
+  "continueWorkout": "繼續",
+  "nextState": "下一個狀態",
+  "switchActivity": "切換活動",
+  "deleteActivity": "刪除活動",
+  "confirmDeleteActivity": "確定要刪除「{activity}」這個活動嗎？",
+  "activityDeleted": "已刪除活動 {activity}",
+  "activityLoaded": "已載入活動 {activity}",
+  "activityCreated": "已建立活動 {activity}",
+  "editCycles": "編輯循環",
+  "editSets": "編輯組數"
 } 

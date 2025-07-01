@@ -190,4 +190,63 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get edit => '編輯';
+
+  @override
+  String get delete => '刪除';
+
+  @override
+  String get workoutResultReport => '運動結果報告';
+
+  @override
+  String get workoutTime => '運動時間';
+
+  @override
+  String get workoutSeconds => '運動秒數';
+
+  @override
+  String get confirm => '確認';
+
+  @override
+  String get previousState => '上一個狀態';
+
+  @override
+  String get pause => '暫停';
+
+  @override
+  String get continueWorkout => '繼續';
+
+  @override
+  String get nextState => '下一個狀態';
+
+  @override
+  String get switchActivity => '切換活動';
+
+  @override
+  String get deleteActivity => '刪除活動';
+
+  @override
+  String confirmDeleteActivity(Object activity) {
+    return '確定要刪除「$activity」這個活動嗎？';
+  }
+
+  @override
+  String activityDeleted(Object activity) {
+    return '已刪除活動 $activity';
+  }
+
+  @override
+  String activityLoaded(Object activity) {
+    return '已載入活動 $activity';
+  }
+
+  @override
+  String activityCreated(Object activity) {
+    return '已建立活動 $activity';
+  }
+
+  @override
+  String get editCycles => '編輯循環';
+
+  @override
+  String get editSets => '編輯組數';
 }
