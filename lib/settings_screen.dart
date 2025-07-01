@@ -9,7 +9,7 @@ import 'package:googleapis_auth/googleapis_auth.dart' as auth;
 import 'package:sqflite/sqflite.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key, this.onLocaleChanged});
@@ -487,16 +487,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               subtitle: Text(
                 Localizations.localeOf(context).languageCode == 'zh'
-                  ? '🇹🇼 繁體中文'
-                  : '🇺🇸 English',
+                  ? '🇹🇼 ' + AppLocalizations.of(context)!.languageChinese
+                  : '🇺🇸 ' + AppLocalizations.of(context)!.languageEnglish,
                 style: TextStyle(fontSize: 13, color: Colors.blueGrey[700]),
               ),
               trailing: ElevatedButton.icon(
                 icon: Icon(Icons.arrow_drop_down, size: 18),
                 label: Text(
                   Localizations.localeOf(context).languageCode == 'zh'
-                    ? '繁體中文'
-                    : 'English',
+                    ? AppLocalizations.of(context)!.languageChinese
+                    : AppLocalizations.of(context)!.languageEnglish,
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -517,12 +517,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         ListTile(
                           leading: Text('🇺🇸', style: TextStyle(fontSize: 20)),
-                          title: Text('English', style: TextStyle(fontSize: 15)),
+                          title: Text(AppLocalizations.of(context)!.languageEnglish, style: TextStyle(fontSize: 15)),
                           onTap: () => Navigator.pop(context, Locale('en')),
                         ),
                         ListTile(
                           leading: Text('🇹🇼', style: TextStyle(fontSize: 20)),
-                          title: Text('繁體中文', style: TextStyle(fontSize: 15)),
+                          title: Text(AppLocalizations.of(context)!.languageChinese, style: TextStyle(fontSize: 15)),
                           onTap: () => Navigator.pop(context, Locale('zh')),
                         ),
                       ],

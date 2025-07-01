@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProgressViewWidget extends StatelessWidget {
   final String currentPhase;
@@ -34,7 +35,12 @@ class ProgressViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String displayText = remainingTime == 0 ? (currentPhase == 'PREP' || currentPhase == 'REST' ? 'Go' : '--') : remainingTime.toString();
+    final localizations = AppLocalizations.of(context)!;
+    String displayText = remainingTime == 0
+        ? (currentPhase == 'PREP' || currentPhase == 'REST'
+            ? localizations.go
+            : '--')
+        : remainingTime.toString();
     return Container(
       decoration: BoxDecoration(
         gradient: gradient,
@@ -85,7 +91,10 @@ class ProgressViewWidget extends StatelessWidget {
             children: [
               Icon(Icons.repeat, color: textColor),
               SizedBox(width: 8),
-              Text('Cycle:  $currentCycle / $totalCycles', style: TextStyle(fontSize: 24, color: textColor)),
+              Text(
+                localizations.cycle(currentCycle, totalCycles),
+                style: TextStyle(fontSize: 24, color: textColor),
+              ),
             ],
           ),
           SizedBox(height: 12),
@@ -94,7 +103,10 @@ class ProgressViewWidget extends StatelessWidget {
             children: [
               Icon(Icons.layers, color: textColor),
               SizedBox(width: 8),
-              Text('Set:  $currentSet / $totalSets', style: TextStyle(fontSize: 24, color: textColor)),
+              Text(
+                localizations.set(currentSet, totalSets),
+                style: TextStyle(fontSize: 24, color: textColor),
+              ),
             ],
           ),
           SizedBox(height: 24),
@@ -104,7 +116,7 @@ class ProgressViewWidget extends StatelessWidget {
                 final d = Duration(seconds: elapsedSeconds);
                 String twoDigits(int n) => n.toString().padLeft(2, '0');
                 final timeStr = '${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}';
-                return Text('本次運動已進行：$timeStr', style: TextStyle(fontSize: 18, color: Colors.blueGrey));
+                return Text(localizations.elapsed(timeStr), style: TextStyle(fontSize: 18, color: Colors.blueGrey));
               },
             ),
           SizedBox(height: 24),

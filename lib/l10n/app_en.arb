@@ -90,5 +90,7 @@
   "setsShort": "S:{count}",
   "totalWorkoutSeconds": "Total Workout Seconds",
   "save": "Save",
-  "recordUpdated": "Record updated"
+  "recordUpdated": "Record updated",
+  "languageEnglish": "English",
+  "languageChinese": "Traditional Chinese"
 } 

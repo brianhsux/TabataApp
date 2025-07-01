@@ -649,6 +649,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Record updated'**
   String get recordUpdated;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Traditional Chinese'**
+  String get languageChinese;
 }
 
 class _AppLocalizationsDelegate

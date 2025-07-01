@@ -325,4 +325,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recordUpdated => 'Record updated';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageChinese => 'Traditional Chinese';
 }

@@ -323,4 +323,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get recordUpdated => '已更新紀錄';
+
+  @override
+  String get languageEnglish => '英文';
+
+  @override
+  String get languageChinese => '繁體中文';
 }

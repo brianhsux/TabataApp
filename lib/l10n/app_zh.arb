@@ -90,5 +90,7 @@
   "setsShort": "S:{count}",
   "totalWorkoutSeconds": "運動總秒數",
   "save": "儲存",
-  "recordUpdated": "已更新紀錄"
+  "recordUpdated": "已更新紀錄",
+  "languageEnglish": "英文",
+  "languageChinese": "繁體中文"
 } 
