@@ -541,6 +541,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm Restore'**
   String get confirmRestore;
+
+  /// No description provided for @deleteConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Confirmation'**
+  String get deleteConfirmation;
+
+  /// No description provided for @confirmDeleteSelectedRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the selected records?'**
+  String get confirmDeleteSelectedRecord;
+
+  /// No description provided for @range.
+  ///
+  /// In en, this message translates to:
+  /// **'Range:'**
+  String get range;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get days;
+
+  /// No description provided for @daysExercised.
+  ///
+  /// In en, this message translates to:
+  /// **'({count} days exercised)'**
+  String daysExercised(Object count);
+
+  /// No description provided for @exerciseRatio.
+  ///
+  /// In en, this message translates to:
+  /// **'{range} days: exercised {count} days, ratio {percent}%'**
+  String exerciseRatio(Object count, Object percent, Object range);
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @deleteSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Selected'**
+  String get deleteSelected;
+
+  /// No description provided for @loadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Load failed: {error}'**
+  String loadFailed(Object error);
+
+  /// No description provided for @noExerciseRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercise records yet'**
+  String get noExerciseRecord;
+
+  /// No description provided for @noRecordThisDay.
+  ///
+  /// In en, this message translates to:
+  /// **'No record for this day'**
+  String get noRecordThisDay;
+
+  /// No description provided for @workoutTimeShort.
+  ///
+  /// In en, this message translates to:
+  /// **'W:{seconds}s'**
+  String workoutTimeShort(Object seconds);
+
+  /// No description provided for @restTimeShort.
+  ///
+  /// In en, this message translates to:
+  /// **'R:{seconds}s'**
+  String restTimeShort(Object seconds);
+
+  /// No description provided for @cyclesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'C:{count}'**
+  String cyclesShort(Object count);
+
+  /// No description provided for @setsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'S:{count}'**
+  String setsShort(Object count);
+
+  /// No description provided for @totalWorkoutSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Workout Seconds'**
+  String get totalWorkoutSeconds;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @recordUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Record updated'**
+  String get recordUpdated;
 }
 
 class _AppLocalizationsDelegate

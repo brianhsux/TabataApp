@@ -3,6 +3,7 @@ import 'exercise_db.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'main.dart' as main;
+import 'l10n/app_localizations.dart';
 
 class ExerciseHistoryScreen extends StatefulWidget {
   const ExerciseHistoryScreen({super.key});
@@ -40,11 +41,11 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('刪除確認'),
-        content: Text('確定要刪除選取的紀錄嗎？'),
+        title: Text(AppLocalizations.of(context)!.deleteConfirmation),
+        content: Text(AppLocalizations.of(context)!.confirmDeleteSelectedRecord),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('取消')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('刪除')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(AppLocalizations.of(context)!.delete)),
         ],
       ),
     );
@@ -58,11 +59,11 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('運動歷史紀錄'),
+        title: Text(AppLocalizations.of(context)!.exerciseHistory),
         actions: [
           IconButton(
             icon: Icon(Icons.pie_chart),
-            tooltip: '查看運動佔比',
+            tooltip: AppLocalizations.of(context)!.viewExerciseRatio,
             onPressed: () {
               _dialogSelectedRange = _selectedRange;
               showDialog(
@@ -80,8 +81,8 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                     }
                     int restCount = _dialogSelectedRange - exerciseCount;
                     final dataMap = {
-                      "有運動": exerciseCount.toDouble(),
-                      "沒運動": restCount.toDouble(),
+                      AppLocalizations.of(context)!.exercised: exerciseCount.toDouble(),
+                      AppLocalizations.of(context)!.noExercise: restCount.toDouble(),
                     };
                     final percent = (exerciseCount / _dialogSelectedRange * 100).toStringAsFixed(1);
                     return Dialog(
@@ -94,7 +95,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('運動佔比統計', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                                Text(AppLocalizations.of(context)!.viewExerciseRatio, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                                 IconButton(
                                   icon: Icon(Icons.close),
                                   onPressed: () => Navigator.pop(context),
@@ -105,10 +106,10 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text("區間：", style: TextStyle(fontSize: 15)),
+                                Text(AppLocalizations.of(context)!.range, style: TextStyle(fontSize: 15)),
                                 DropdownButton<int>(
                                   value: _dialogSelectedRange,
-                                  items: _rangeOptions.map((v) => DropdownMenuItem(value: v, child: Text("$v 天"))).toList(),
+                                  items: _rangeOptions.map((v) => DropdownMenuItem(value: v, child: Text("$v ${AppLocalizations.of(context)!.days}"))).toList(),
                                   onChanged: (v) {
                                     if (v != null) setState(() => _dialogSelectedRange = v);
                                   },
@@ -116,7 +117,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                               ],
                             ),
                             SizedBox(height: 4),
-                            Text("（${exerciseCount}天有運動）", style: TextStyle(fontSize: 15)),
+                            Text(AppLocalizations.of(context)!.daysExercised(exerciseCount), style: TextStyle(fontSize: 15)),
                             SizedBox(height: 8),
                             SizedBox(
                               height: 140,
@@ -137,13 +138,13 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                               ),
                             ),
                             SizedBox(height: 6),
-                            Text("${_dialogSelectedRange}天內運動${exerciseCount}天，佔比 $percent%", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                            Text(AppLocalizations.of(context)!.exerciseRatio(exerciseCount, percent, _dialogSelectedRange), style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                             SizedBox(height: 8),
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: Text('關閉'),
+                                child: Text(AppLocalizations.of(context)!.close),
                               ),
                             ),
                           ],
@@ -158,7 +159,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
           if (_selectedIds.isNotEmpty)
             IconButton(
               icon: Icon(Icons.delete),
-              tooltip: '刪除選取',
+              tooltip: AppLocalizations.of(context)!.deleteSelected,
               onPressed: _deleteSelected,
             ),
         ],
@@ -169,12 +170,12 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('讀取失敗: \\${snapshot.error}'));
+            return Center(child: Text(AppLocalizations.of(context)!.loadFailed(snapshot.error.toString())));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Column(
               children: [
                 _buildCalendar([]),
-                Expanded(child: Center(child: Text('尚無運動紀錄'))),
+                Expanded(child: Center(child: Text(AppLocalizations.of(context)!.noExerciseRecord))),
               ],
             );
           }
@@ -191,7 +192,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
               _buildCalendar(records),
               Expanded(
                 child: filteredRecords.isEmpty
-                  ? Center(child: Text('這天沒有運動紀錄'))
+                  ? Center(child: Text(AppLocalizations.of(context)!.noRecordThisDay))
                   : ListView.separated(
                       itemCount: filteredRecords.length,
                       separatorBuilder: (_, __) => Divider(),
@@ -251,7 +252,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  r.workoutName?.isNotEmpty == true ? r.workoutName! : '未命名活動',
+                                                  r.workoutName?.isNotEmpty == true ? r.workoutName! : AppLocalizations.of(context)!.untitledActivity,
                                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, letterSpacing: 0.5),
                                                   overflow: TextOverflow.ellipsis,
                                                 ),
@@ -267,19 +268,19 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                             children: [
                                               Icon(Icons.timer, size: 16, color: Colors.grey[500]),
                                               SizedBox(width: 3),
-                                              Text('W:${r.workoutTime}s', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                              Text(AppLocalizations.of(context)!.workoutTimeShort(r.workoutTime), style: TextStyle(fontSize: 13, color: Colors.grey[700])),
                                               SizedBox(width: 10),
                                               Icon(Icons.self_improvement, size: 16, color: Colors.grey[500]),
                                               SizedBox(width: 3),
-                                              Text('R:${r.restTime}s', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                              Text(AppLocalizations.of(context)!.restTimeShort(r.restTime), style: TextStyle(fontSize: 13, color: Colors.grey[700])),
                                               SizedBox(width: 10),
                                               Icon(Icons.repeat, size: 16, color: Colors.grey[500]),
                                               SizedBox(width: 3),
-                                              Text('C:${r.cycles}', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                              Text(AppLocalizations.of(context)!.cyclesShort(r.cycles), style: TextStyle(fontSize: 13, color: Colors.grey[700])),
                                               SizedBox(width: 10),
                                               Icon(Icons.layers, size: 16, color: Colors.grey[500]),
                                               SizedBox(width: 3),
-                                              Text('S:${r.sets}', style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                                              Text(AppLocalizations.of(context)!.setsShort(r.sets), style: TextStyle(fontSize: 13, color: Colors.grey[700])),
                                             ],
                                           ),
                                           SizedBox(height: 4),
@@ -330,13 +331,13 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                           children: [
                                                             Icon(Icons.edit, color: Colors.orange, size: 22),
                                                             SizedBox(width: 8),
-                                                            Text('編輯紀錄', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange)),
+                                                            Text(AppLocalizations.of(context)!.editRecord, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange)),
                                                           ],
                                                         ),
                                                         SizedBox(height: 18),
                                                         TextField(
                                                           controller: nameCtrl,
-                                                          decoration: InputDecoration(labelText: '活動名稱'),
+                                                          decoration: InputDecoration(labelText: AppLocalizations.of(context)!.activityName),
                                                         ),
                                                         Row(
                                                           children: [
@@ -344,7 +345,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                               child: TextField(
                                                                 controller: workCtrl,
                                                                 keyboardType: TextInputType.number,
-                                                                decoration: InputDecoration(labelText: 'Work 秒數'),
+                                                                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.workSeconds),
                                                               ),
                                                             ),
                                                             SizedBox(width: 8),
@@ -352,7 +353,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                               child: TextField(
                                                                 controller: restCtrl,
                                                                 keyboardType: TextInputType.number,
-                                                                decoration: InputDecoration(labelText: 'Rest 秒數'),
+                                                                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.restSeconds),
                                                               ),
                                                             ),
                                                           ],
@@ -363,7 +364,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                               child: TextField(
                                                                 controller: cyclesCtrl,
                                                                 keyboardType: TextInputType.number,
-                                                                decoration: InputDecoration(labelText: 'Cycles'),
+                                                                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.cycles),
                                                               ),
                                                             ),
                                                             SizedBox(width: 8),
@@ -371,7 +372,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                               child: TextField(
                                                                 controller: setsCtrl,
                                                                 keyboardType: TextInputType.number,
-                                                                decoration: InputDecoration(labelText: 'Sets'),
+                                                                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.sets),
                                                               ),
                                                             ),
                                                           ],
@@ -379,12 +380,12 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                         TextField(
                                                           controller: durationCtrl,
                                                           keyboardType: TextInputType.number,
-                                                          decoration: InputDecoration(labelText: '運動總秒數'),
+                                                          decoration: InputDecoration(labelText: AppLocalizations.of(context)!.totalWorkoutSeconds),
                                                         ),
                                                         TextField(
                                                           controller: dateCtrl,
                                                           readOnly: true,
-                                                          decoration: InputDecoration(labelText: '日期時間 (yyyy-MM-ddTHH:mm)'),
+                                                          decoration: InputDecoration(labelText: AppLocalizations.of(context)!.dateTime),
                                                           onTap: () async {
                                                             // 選日期
                                                             final date = await showDatePicker(
@@ -437,7 +438,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                             Expanded(
                                                               child: OutlinedButton(
                                                                 onPressed: () => Navigator.pop(context, null),
-                                                                child: Text('取消'),
+                                                                child: Text(AppLocalizations.of(context)!.cancel),
                                                               ),
                                                             ),
                                                             SizedBox(width: 12),
@@ -456,7 +457,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                                                   );
                                                                   Navigator.pop(context, edited);
                                                                 },
-                                                                child: Text('儲存', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                                child: Text(AppLocalizations.of(context)!.save, style: TextStyle(fontWeight: FontWeight.bold)),
                                                               ),
                                                             ),
                                                           ],
@@ -471,7 +472,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                                           if (edited != null) {
                                             await ExerciseDatabase.instance.updateRecord(edited);
                                             setState(_refreshRecords);
-                                            main.showAppSnackBar(context, '已更新紀錄', icon: Icons.check_circle, color: Colors.green);
+                                            main.showAppSnackBar(context, AppLocalizations.of(context)!.recordUpdated, icon: Icons.check_circle, color: Colors.green);
                                           }
                                         },
                                         child: Padding(

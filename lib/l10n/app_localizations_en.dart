@@ -256,4 +256,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirmRestore => 'Confirm Restore';
+
+  @override
+  String get deleteConfirmation => 'Delete Confirmation';
+
+  @override
+  String get confirmDeleteSelectedRecord =>
+      'Are you sure you want to delete the selected records?';
+
+  @override
+  String get range => 'Range:';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String daysExercised(Object count) {
+    return '($count days exercised)';
+  }
+
+  @override
+  String exerciseRatio(Object count, Object percent, Object range) {
+    return '$range days: exercised $count days, ratio $percent%';
+  }
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get deleteSelected => 'Delete Selected';
+
+  @override
+  String loadFailed(Object error) {
+    return 'Load failed: $error';
+  }
+
+  @override
+  String get noExerciseRecord => 'No exercise records yet';
+
+  @override
+  String get noRecordThisDay => 'No record for this day';
+
+  @override
+  String workoutTimeShort(Object seconds) {
+    return 'W:${seconds}s';
+  }
+
+  @override
+  String restTimeShort(Object seconds) {
+    return 'R:${seconds}s';
+  }
+
+  @override
+  String cyclesShort(Object count) {
+    return 'C:$count';
+  }
+
+  @override
+  String setsShort(Object count) {
+    return 'S:$count';
+  }
+
+  @override
+  String get totalWorkoutSeconds => 'Total Workout Seconds';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get recordUpdated => 'Record updated';
 }

@@ -255,4 +255,72 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get confirmRestore => '確認還原';
+
+  @override
+  String get deleteConfirmation => '刪除確認';
+
+  @override
+  String get confirmDeleteSelectedRecord => '確定要刪除選取的紀錄嗎？';
+
+  @override
+  String get range => '區間：';
+
+  @override
+  String get days => '天';
+
+  @override
+  String daysExercised(Object count) {
+    return '（$count天有運動）';
+  }
+
+  @override
+  String exerciseRatio(Object count, Object percent, Object range) {
+    return '$range天內運動$count天，佔比$percent%';
+  }
+
+  @override
+  String get close => '關閉';
+
+  @override
+  String get deleteSelected => '刪除選取';
+
+  @override
+  String loadFailed(Object error) {
+    return '讀取失敗: $error';
+  }
+
+  @override
+  String get noExerciseRecord => '尚無運動紀錄';
+
+  @override
+  String get noRecordThisDay => '這天沒有運動紀錄';
+
+  @override
+  String workoutTimeShort(Object seconds) {
+    return 'W:${seconds}s';
+  }
+
+  @override
+  String restTimeShort(Object seconds) {
+    return 'R:${seconds}s';
+  }
+
+  @override
+  String cyclesShort(Object count) {
+    return 'C:$count';
+  }
+
+  @override
+  String setsShort(Object count) {
+    return 'S:$count';
+  }
+
+  @override
+  String get totalWorkoutSeconds => '運動總秒數';
+
+  @override
+  String get save => '儲存';
+
+  @override
+  String get recordUpdated => '已更新紀錄';
 }
