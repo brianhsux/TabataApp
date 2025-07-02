@@ -21,7 +21,7 @@
   "activityName": "活動名稱",
   "workSeconds": "運動秒數", 
   "restSeconds": "休息秒數",
-  "dateTime": "日期時間 (yyyy-MM-ddTHH:mm)",
+  "dateTime": "日期時間 ",
   "elapsed": "本次運動已進行：{time}",
   "done": "完成",
   "go": "開始",

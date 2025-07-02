@@ -79,7 +79,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get restSeconds => '休息秒數';
 
   @override
-  String get dateTime => '日期時間 (yyyy-MM-ddTHH:mm)';
+  String get dateTime => '日期時間 ';
 
   @override
   String elapsed(Object time) {
@@ -409,7 +409,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get restSeconds => '休息秒数';
 
   @override
-  String get dateTime => '日期时间 (yyyy-MM-ddTHH:mm)';
+  String get dateTime => '日期时间 ';
 
   @override
   String elapsed(Object time) {

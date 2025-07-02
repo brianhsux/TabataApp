@@ -833,23 +833,24 @@ class _TabataScreenState extends State<TabataScreen> {
           ),
         ],
       ),
-      margin: EdgeInsets.all(24 * scale),
+      margin: EdgeInsets.all(16 * scale),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(iconData, size: 64 * scale, color: textColor),
-          SizedBox(height: 16 * scale),
+          Icon(iconData, size: 48 * scale, color: textColor),
+          SizedBox(height: 12 * scale),
           Text(
             phaseText,
             style: TextStyle(fontSize: 48 * scale, color: textColor, fontWeight: FontWeight.bold, letterSpacing: 2 * scale),
           ),
+          SizedBox(height: 16 * scale),
           // 圓形倒數進度條
           Stack(
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 240 * scale,
-                height: 240 * scale,
+                width: 300 * scale,
+                height: 300 * scale,
                 child: CircularProgressIndicator(
                   value: _getProgress(),
                   strokeWidth: 16 * scale,
@@ -860,7 +861,8 @@ class _TabataScreenState extends State<TabataScreen> {
               Text(
                 displayText,
                 style: TextStyle(
-                  fontSize: displayText == AppLocalizations.of(context)!.done ? 72 * scale : 120 * scale,
+                  fontSize: (displayText == AppLocalizations.of(context)!.done || displayText == AppLocalizations.of(context)!.go) 
+                  ? 72 * scale : 120 * scale,
                   fontWeight: FontWeight.bold,
                   color: textColor,
                   shadows: [
@@ -870,7 +872,7 @@ class _TabataScreenState extends State<TabataScreen> {
               ),
             ],
           ),
-          SizedBox(height: 20 * scale),
+          SizedBox(height: 16 * scale),
           // Cycle and Set on separate lines
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -895,17 +897,17 @@ class _TabataScreenState extends State<TabataScreen> {
               ),
             ],
           ),
-          SizedBox(height: 24 * scale),
+          SizedBox(height: 12 * scale),
           if (showElapsed)
             Builder(
               builder: (context) {
                 final d = Duration(seconds: _elapsedSeconds);
                 String twoDigits(int n) => n.toString().padLeft(2, '0');
                 final timeStr = '${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}';
-                return Text(AppLocalizations.of(context)!.elapsed(timeStr), style: TextStyle(fontSize: 18 * scale, color: Colors.blueGrey));
+                return Text(AppLocalizations.of(context)!.elapsed(timeStr), style: TextStyle(fontSize: 18 * scale, color: Colors.white, fontWeight: FontWeight.bold));
               },
             ),
-          SizedBox(height: 24 * scale),
+          SizedBox(height: 12 * scale),
           // 控制按鈕
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1613,10 +1615,11 @@ class _TabataScreenState extends State<TabataScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
     print('DEBUG: screenHeight = ' + screenHeight.toString());
     double scale = 1.0;
-    final bannerHeight = 50.0;
-    final availableHeight = screenHeight - bannerHeight;
-    if (availableHeight < 900) {
-      scale = (availableHeight / 900).clamp(0.7, 1.0);
+    final bool showBanner = (_isBannerLoaded && _bannerAd != null) && (_selectedIndex == 0);
+    final double bannerHeight = showBanner ? _bannerAd!.size.height.toDouble() : 0.0;
+    final double availableHeight = (screenHeight - bannerHeight).clamp(200.0, screenHeight);
+    if (availableHeight < 1000) {
+      scale = (availableHeight / 1000).clamp(0.6, 1.0);
     }
 
     final List<Widget> _pages = [
@@ -1708,7 +1711,7 @@ class _TabataScreenState extends State<TabataScreen> {
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          if ((_isBannerLoaded && _bannerAd != null) && (showSetup && _selectedIndex == 0))
+          if (showBanner)
             Container(
               width: _bannerAd!.size.width.toDouble(),
               height: _bannerAd!.size.height.toDouble(),
