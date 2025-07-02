@@ -395,58 +395,102 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
   }
 
   Widget _buildCalendar(List<ExerciseRecord> records) {
-    return TableCalendar(
-      firstDay: DateTime.utc(2020, 1, 1),
-      lastDay: DateTime.utc(2100, 12, 31),
-      focusedDay: _focusedDay,
-      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-      onDaySelected: (selectedDay, focusedDay) {
-        setState(() {
-          _selectedDay = selectedDay;
-          _focusedDay = focusedDay;
-        });
-      },
-      availableCalendarFormats: const {CalendarFormat.month: '月'},
-      calendarFormat: CalendarFormat.month,
-      rowHeight: 40,
-      daysOfWeekHeight: 20,
-      daysOfWeekStyle: DaysOfWeekStyle(
-        weekdayStyle: TextStyle(fontSize: 12),
-        weekendStyle: TextStyle(fontSize: 12),
-      ),
-      calendarStyle: CalendarStyle(
-        todayDecoration: BoxDecoration(
-          color: Colors.blueAccent,
-          shape: BoxShape.circle,
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
+    String monthLabel;
+    if (locale.languageCode == 'zh') {
+      monthLabel = "${_focusedDay.year}年 ${_focusedDay.month.toString().padLeft(2, '0')}月";
+    } else {
+      // 英文或其他語系顯示英文月份
+      final monthNames = [
+        '', 'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      monthLabel = "${monthNames[_focusedDay.month]} ${_focusedDay.year}";
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: Icon(Icons.chevron_left),
+              onPressed: () {
+                setState(() {
+                  _focusedDay = DateTime(_focusedDay.year, _focusedDay.month - 1, 1);
+                });
+              },
+            ),
+            Text(
+              monthLabel,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: Icon(Icons.chevron_right),
+              onPressed: () {
+                setState(() {
+                  _focusedDay = DateTime(_focusedDay.year, _focusedDay.month + 1, 1);
+                });
+              },
+            ),
+          ],
         ),
-        selectedDecoration: BoxDecoration(
-          color: Colors.pinkAccent,
-          shape: BoxShape.circle,
+        TableCalendar(
+          headerVisible: false,
+          firstDay: DateTime.utc(2020, 1, 1),
+          lastDay: DateTime.utc(2100, 12, 31),
+          focusedDay: _focusedDay,
+          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+              _focusedDay = focusedDay;
+            });
+          },
+          availableCalendarFormats: const {CalendarFormat.month: '月'},
+          calendarFormat: CalendarFormat.month,
+          rowHeight: 40,
+          daysOfWeekHeight: 20,
+          daysOfWeekStyle: DaysOfWeekStyle(
+            weekdayStyle: TextStyle(fontSize: 12),
+            weekendStyle: TextStyle(fontSize: 12),
+          ),
+          calendarStyle: CalendarStyle(
+            todayDecoration: BoxDecoration(
+              color: Colors.blueAccent,
+              shape: BoxShape.circle,
+            ),
+            selectedDecoration: BoxDecoration(
+              color: Colors.pinkAccent,
+              shape: BoxShape.circle,
+            ),
+            markerDecoration: BoxDecoration(
+              color: Colors.orange,
+              shape: BoxShape.circle,
+            ),
+          ),
+          calendarBuilders: CalendarBuilders(
+            markerBuilder: (context, day, events) {
+              final isExerciseDay = _exerciseDays.contains(DateTime(day.year, day.month, day.day));
+              if (isExerciseDay) {
+                return Positioned(
+                  bottom: 1,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: Colors.orange,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                );
+              }
+              return null;
+            },
+          ),
         ),
-        markerDecoration: BoxDecoration(
-          color: Colors.orange,
-          shape: BoxShape.circle,
-        ),
-      ),
-      calendarBuilders: CalendarBuilders(
-        markerBuilder: (context, day, events) {
-          final isExerciseDay = _exerciseDays.contains(DateTime(day.year, day.month, day.day));
-          if (isExerciseDay) {
-            return Positioned(
-              bottom: 1,
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            );
-          }
-          return null;
-        },
-      ),
+      ],
     );
   }
 
