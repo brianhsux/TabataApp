@@ -204,7 +204,7 @@ class ExerciseHistoryScreenState extends State<ExerciseHistoryScreen> {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                           child: Material(
-                            color: Colors.white,
+                            color: Theme.of(context).cardColor,
                             elevation: selected ? 6 : 2,
                             borderRadius: BorderRadius.circular(18),
                             child: InkWell(
