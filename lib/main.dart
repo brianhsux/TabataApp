@@ -17,6 +17,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -1736,6 +1737,103 @@ class _TabataScreenState extends State<TabataScreen> {
               )
             : null,
         actions: [
+          if (_selectedIndex == 1)
+            IconButton(
+              icon: Icon(Icons.pie_chart, size: 22 * scale),
+              tooltip: AppLocalizations.of(context)!.viewExerciseRatio,
+              onPressed: () async {
+                int dialogSelectedRange = 5;
+                final allRecords = await ExerciseDatabase.instance.fetchAllRecords();
+                showDialog(
+                  context: context,
+                  builder: (context) => StatefulBuilder(
+                    builder: (context, setState) {
+                      final now = DateTime.now();
+                      final start = now.subtract(Duration(days: dialogSelectedRange - 1));
+                      final Set<String> exerciseDayStrs = allRecords.map((r) => r.dateTime.substring(0, 10)).toSet();
+                      int exerciseCount = 0;
+                      for (int i = 0; i < dialogSelectedRange; i++) {
+                        final d = start.add(Duration(days: i));
+                        final dStr = "${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}";
+                        if (exerciseDayStrs.contains(dStr)) exerciseCount++;
+                      }
+                      int restCount = dialogSelectedRange - exerciseCount;
+                      final dataMap = {
+                        AppLocalizations.of(context)!.exercised: exerciseCount.toDouble(),
+                        AppLocalizations.of(context)!.noExercise: restCount.toDouble(),
+                      };
+                      final percent = (exerciseCount / dialogSelectedRange * 100).toStringAsFixed(1);
+                      return Dialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(AppLocalizations.of(context)!.viewExerciseRatio, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                                  IconButton(
+                                    icon: Icon(Icons.close),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(AppLocalizations.of(context)!.range, style: TextStyle(fontSize: 15)),
+                                  DropdownButton<int>(
+                                    value: dialogSelectedRange,
+                                    items: [5, 7, 14, 30, 90, 180, 360].map((v) => DropdownMenuItem(value: v, child: Text("$v ${AppLocalizations.of(context)!.days}"))).toList(),
+                                    onChanged: (v) {
+                                      if (v != null) setState(() => dialogSelectedRange = v);
+                                    },
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4),
+                              Text(AppLocalizations.of(context)!.daysExercised(exerciseCount), style: TextStyle(fontSize: 15)),
+                              SizedBox(height: 8),
+                              SizedBox(
+                                height: 140,
+                                child: PieChart(
+                                  dataMap: dataMap,
+                                  chartType: ChartType.disc,
+                                  colorList: [Colors.blueAccent, Colors.grey[300]!],
+                                  chartValuesOptions: ChartValuesOptions(
+                                    showChartValuesInPercentage: true,
+                                    showChartValues: false,
+                                    showChartValueBackground: false,
+                                  ),
+                                  legendOptions: LegendOptions(
+                                    showLegends: true,
+                                    legendPosition: LegendPosition.right,
+                                    legendTextStyle: TextStyle(fontSize: 13),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 6),
+                              Text(AppLocalizations.of(context)!.exerciseRatio(exerciseCount, percent, dialogSelectedRange), style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                              SizedBox(height: 8),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(AppLocalizations.of(context)!.close),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
           IconButton(
             icon: Icon(Icons.settings, size: 22 * scale),
             onPressed: () {
