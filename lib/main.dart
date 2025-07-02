@@ -1722,7 +1722,12 @@ class _TabataScreenState extends State<TabataScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.tabataTimer, style: TextStyle(fontSize: 22 * scale)),
+        title: Text(
+          _selectedIndex == 0
+              ? AppLocalizations.of(context)!.tabataTimer
+              : AppLocalizations.of(context)!.exerciseHistory,
+          style: TextStyle(fontSize: 22 * scale),
+        ),
         leading: !showSetup
             ? IconButton(
                 icon: Icon(Icons.close, size: 22 * scale),
