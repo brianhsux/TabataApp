@@ -396,7 +396,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               leading: Icon(Icons.account_circle),
               title: Text(
                 AppLocalizations.of(context)!.notSignedInGoogle,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black87),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
               ),
               trailing: TextButton(
                 onPressed: _handleSignIn,
@@ -406,7 +406,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SwitchListTile(
             title: Text(
               AppLocalizations.of(context)!.bgm,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black87),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
             ),
             subtitle: Text(
               AppLocalizations.of(context)!.bgmHint,
