@@ -13,9 +13,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key, this.onLocaleChanged});
+  const SettingsScreen({super.key, this.onLocaleChanged, this.onThemeModeChanged});
 
   final Function(Locale)? onLocaleChanged;
+  final Function(ThemeMode)? onThemeModeChanged;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -415,6 +416,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: (value) {
               tabataState.setBgmEnabled(value);
             },
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              leading: Icon(Icons.brightness_6, color: Colors.blueAccent, size: 22),
+              title: Text('主題模式', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              subtitle: Text(
+                tabataState.themeMode == ThemeMode.system
+                  ? '跟隨系統'
+                  : tabataState.themeMode == ThemeMode.dark
+                    ? '深色'
+                    : '淺色',
+                style: TextStyle(fontSize: 13, color: Colors.blueGrey[700]),
+              ),
+              trailing: ElevatedButton.icon(
+                icon: Icon(Icons.arrow_drop_down, size: 18),
+                label: Text(
+                  tabataState.themeMode == ThemeMode.system
+                    ? '跟隨系統'
+                    : tabataState.themeMode == ThemeMode.dark
+                      ? '深色'
+                      : '淺色',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  textStyle: TextStyle(fontSize: 15),
+                ),
+                onPressed: () async {
+                  final mode = await showModalBottomSheet<ThemeMode>(
+                    context: context,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
+                    builder: (context) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.settings),
+                          title: Text('跟隨系統'),
+                          onTap: () => Navigator.pop(context, ThemeMode.system),
+                          selected: tabataState.themeMode == ThemeMode.system,
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.light_mode),
+                          title: Text('淺色'),
+                          onTap: () => Navigator.pop(context, ThemeMode.light),
+                          selected: tabataState.themeMode == ThemeMode.light,
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.dark_mode),
+                          title: Text('深色'),
+                          onTap: () => Navigator.pop(context, ThemeMode.dark),
+                          selected: tabataState.themeMode == ThemeMode.dark,
+                        ),
+                      ],
+                    ),
+                  );
+                  if (mode != null && widget.onThemeModeChanged != null) {
+                    widget.onThemeModeChanged!(mode);
+                  }
+                },
+              ),
+            ),
           ),
           const Divider(),
           Padding(

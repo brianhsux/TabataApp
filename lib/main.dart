@@ -38,6 +38,23 @@ class TabataApp extends StatefulWidget {
 
 class _TabataAppState extends State<TabataApp> {
   Locale? _locale;
+  ThemeMode _themeMode = ThemeMode.system;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = Provider.of<TabataState>(context, listen: false);
+      setState(() {
+        _themeMode = state.themeMode;
+      });
+      state.addListener(() {
+        setState(() {
+          _themeMode = state.themeMode;
+        });
+      });
+    });
+  }
 
   void setLocale(Locale locale) {
     setState(() {
@@ -57,6 +74,11 @@ class _TabataAppState extends State<TabataApp> {
           bodyMedium: TextStyle(fontSize: 18, color: Colors.black),
         ),
       ),
+      darkTheme: ThemeData.dark().copyWith(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark),
+        useMaterial3: true,
+      ),
+      themeMode: _themeMode,
       locale: _locale,
       localizationsDelegates: [
         AppLocalizations.delegate,
@@ -71,6 +93,10 @@ class _TabataAppState extends State<TabataApp> {
       ],
       home: TabataScreen(
         onLocaleChanged: setLocale,
+        onThemeModeChanged: (mode) {
+          final state = Provider.of<TabataState>(context, listen: false);
+          state.setThemeMode(mode);
+        },
       ),
     );
   }
@@ -84,6 +110,8 @@ class TabataState with ChangeNotifier {
   int cycles = 8;
   int sets = 1;
   bool bgmEnabled = true;
+  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode get themeMode => _themeMode;
   static const int defaultPrepTime = 10;
   static const int defaultWorkTime = 45;
   static const int defaultRestTime = 15;
@@ -100,6 +128,10 @@ class TabataState with ChangeNotifier {
     restTime = prefs.getInt('restTime') ?? defaultRestTime;
     cycles = prefs.getInt('cycles') ?? defaultCycles;
     sets = prefs.getInt('sets') ?? defaultSets;
+    int? themeIdx = prefs.getInt('themeMode');
+    if (themeIdx != null) {
+      _themeMode = ThemeMode.values[themeIdx];
+    }
     notifyListeners();
   }
   void setBgmEnabled(bool value) async {
@@ -138,6 +170,12 @@ class TabataState with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('sets', newSets);
   }
+  void setThemeMode(ThemeMode mode) async {
+    _themeMode = mode;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('themeMode', mode.index);
+  }
   Future<void> resetPreferences() async {
     prepTime = defaultPrepTime;
     workTime = defaultWorkTime;
@@ -157,9 +195,9 @@ class TabataState with ChangeNotifier {
 }
 
 class TabataScreen extends StatefulWidget {
-  const TabataScreen({super.key, required this.onLocaleChanged});
-
-  final Function(Locale) onLocaleChanged;
+  final Function(Locale)? onLocaleChanged;
+  final Function(ThemeMode)? onThemeModeChanged;
+  const TabataScreen({super.key, this.onLocaleChanged, this.onThemeModeChanged});
 
   @override
   _TabataScreenState createState() => _TabataScreenState();
@@ -1701,6 +1739,7 @@ class _TabataScreenState extends State<TabataScreen> {
                 MaterialPageRoute(
                   builder: (context) => SettingsScreen(
                     onLocaleChanged: widget.onLocaleChanged,
+                    onThemeModeChanged: widget.onThemeModeChanged,
                   ),
                 ),
               );
