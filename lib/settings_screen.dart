@@ -380,11 +380,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               title: Text(
                 _currentUser!.displayName ?? _currentUser!.email,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black87),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface),
               ),
               subtitle: Text(
                 _currentUser!.email,
-                style: TextStyle(fontSize: 13, color: Colors.blueGrey[700]),
+                style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSecondary),
               ),
               trailing: TextButton(
                 onPressed: _handleSignOut,
@@ -458,19 +458,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         ListTile(
                           leading: Icon(Icons.settings),
-                          title: Text('跟隨系統'),
+                          title: Text('跟隨系統', style: TextStyle(fontSize: 15)),
                           onTap: () => Navigator.pop(context, ThemeMode.system),
                           selected: tabataState.themeMode == ThemeMode.system,
                         ),
                         ListTile(
                           leading: Icon(Icons.light_mode),
-                          title: Text('淺色'),
+                          title: Text('淺色', style: TextStyle(fontSize: 15)),
                           onTap: () => Navigator.pop(context, ThemeMode.light),
                           selected: tabataState.themeMode == ThemeMode.light,
                         ),
                         ListTile(
                           leading: Icon(Icons.dark_mode),
-                          title: Text('深色'),
+                          title: Text('深色', style: TextStyle(fontSize: 15)),
                           onTap: () => Navigator.pop(context, ThemeMode.dark),
                           selected: tabataState.themeMode == ThemeMode.dark,
                         ),
