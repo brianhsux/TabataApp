@@ -1,40 +1,30 @@
 {
   "project_info": {
-    "project_number": "849398075930",
-    "project_id": "tabataapp-5101a",
-    "storage_bucket": "tabataapp-5101a.firebasestorage.app"
+    "project_number": "913180693200",
+    "project_id": "tabataapp",
+    "storage_bucket": "tabataapp.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:849398075930:android:8e49d2bd9b100ceeb237a3",
-        "android_client_info": {
-          "package_name": "com.firebase.example.firebase_example"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB9Ql7lK9w_1BCo4TKIzsWJDXI_mRsg-OM"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:849398075930:android:391690abd69d2762b237a3",
+        "mobilesdk_app_id": "1:913180693200:android:721da96ac553c4a68d84d5",
         "android_client_info": {
           "package_name": "com.sports.tabata_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "913180693200-ecm8863uaa7nej6hieqlon9gip7ge42q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sports.tabata_app",
+            "certificate_hash": "960f9993c19ae0ac2a200fac0b2749743731580c"
+          }
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyB9Ql7lK9w_1BCo4TKIzsWJDXI_mRsg-OM"
+          "current_key": "AIzaSyDqcX0VGiLw1-LlKxXSUEOhmaZRYOEuBuQ"
         }
       ],
       "services": {

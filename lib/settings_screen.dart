@@ -11,6 +11,10 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key, this.onLocaleChanged, this.onThemeModeChanged});
@@ -45,15 +49,66 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _handleSignIn() async {
+    // Step 1. Google Sign-In
+    GoogleSignInAccount? googleUser;
     try {
-      await _googleSignIn.signIn();
-    } catch (error) {
-      main.showAppSnackBar(context, 'Google 登入失敗: ' + error.toString(), icon: Icons.error, color: Colors.redAccent);
+      googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        debugPrint('Google sign-in cancelled by user');
+        return;
+      }
+      debugPrint('Google sign-in success: ${googleUser.email}');
+    } catch (error, stack) {
+      debugPrint('Google sign-in error: ${error}');
+      FirebaseCrashlytics.instance.recordError(error, stack, reason: 'Error during Google sign-in');
+      if (context.mounted) {
+        main.showAppSnackBar(context, 'Google 登入失敗: ' + error.toString(), icon: Icons.error, color: Colors.redAccent);
+      }
+      return; // Stop if Google sign-in failed
+    }
+
+    // Step 2. FirebaseAuth Sign-In
+    UserCredential? userCredential;
+    try {
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken,
+      );
+      userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      debugPrint('FirebaseAuth sign-in success: ${userCredential.user?.uid}');
+    } catch (error, stack) {
+      debugPrint('FirebaseAuth sign-in error: ${error}');
+      FirebaseCrashlytics.instance.recordError(error, stack, reason: 'Error during FirebaseAuth sign-in');
+      if (context.mounted) {
+        main.showAppSnackBar(context, 'Firebase Auth 登入失敗: ' + error.toString(), icon: Icons.error, color: Colors.redAccent);
+      }
+      return; // Stop if FirebaseAuth sign-in failed
+    }
+
+    // Step 3. Firestore Write
+    try {
+      final firebaseUser = userCredential.user;
+      if (firebaseUser != null && firebaseUser.email != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(firebaseUser.uid)
+            .set({'email': firebaseUser.email}, SetOptions(merge: true));
+        await FirebaseCrashlytics.instance.setUserIdentifier(firebaseUser.email!);
+        debugPrint('Firestore write success for uid: ${firebaseUser.uid}');
+      }
+    } catch (error, stack) {
+      debugPrint('Firestore write error: ${error}');
+      FirebaseCrashlytics.instance.recordError(error, stack, reason: 'Error writing user email to Firestore');
+      if (context.mounted) {
+        main.showAppSnackBar(context, 'Firestore 寫入失敗: ' + error.toString(), icon: Icons.error, color: Colors.redAccent);
+      }
     }
   }
 
   Future<void> _handleSignOut() async {
     await _googleSignIn.disconnect();
+    await FirebaseCrashlytics.instance.setUserIdentifier('');
   }
 
   Future<void> backupToGoogleDrive() async {
@@ -384,7 +439,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               subtitle: Text(
                 _currentUser!.email,
-                style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSecondary),
+                style: TextStyle(fontSize: 13, color: Colors.blueGrey),
               ),
               trailing: TextButton(
                 onPressed: _handleSignOut,
@@ -428,7 +483,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   : tabataState.themeMode == ThemeMode.dark
                     ? '深色'
                     : '淺色',
-                style: TextStyle(fontSize: 13, color: Colors.blueGrey[700]),
+                style: TextStyle(fontSize: 13, color: Colors.blueGrey),
               ),
               trailing: ElevatedButton.icon(
                 icon: Icon(Icons.arrow_drop_down, size: 18),
@@ -560,7 +615,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   : Localizations.localeOf(context).languageCode == 'zh'
                     ? '🇹🇼 ' + AppLocalizations.of(context)!.languageChinese
                     : '🇺🇸 ' + AppLocalizations.of(context)!.languageEnglish,
-                style: TextStyle(fontSize: 13, color: Colors.blueGrey[700]),
+                style: TextStyle(fontSize: 13, color: Colors.blueGrey),
               ),
               trailing: ElevatedButton.icon(
                 icon: Icon(Icons.arrow_drop_down, size: 18),
